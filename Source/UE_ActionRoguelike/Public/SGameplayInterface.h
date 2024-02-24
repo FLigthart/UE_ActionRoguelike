@@ -1,0 +1,23 @@
+#pragma once
+
+#include "CoreMinimal.h"
+#include "UObject/Interface.h"
+#include "SGameplayInterface.generated.h"
+
+//This class does not need to be modified. Boilerplate for UE.
+UINTERFACE(MinimalAPI)
+class USGameplayInterface : public UInterface
+{
+	GENERATED_BODY()
+	
+};
+
+//Add interface functions here.
+class UE_ACTIONROGUELIKE_API ISGameplayInterface
+{
+	GENERATED_BODY()
+public:
+
+	UFUNCTION(BlueprintNativeEvent)
+	void Interact(APawn* InstigatorPawn);
+};

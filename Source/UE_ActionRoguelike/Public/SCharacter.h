@@ -9,7 +9,9 @@ class USpringArmComponent;
 
 class UInputMappingContext;
 class UInputAction;
+class USInteractionComponent;
 struct FInputActionValue;
+
 
 UCLASS()
 class UE_ACTIONROGUELIKE_API ASCharacter : public ACharacter
@@ -41,12 +43,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> Input_Jump;
 
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> Input_PrimaryInteract;
+
 	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USpringArmComponent> SpringArmComp;
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UCameraComponent> CameraComp;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<USInteractionComponent> InteractionComp;
 	
 	virtual void BeginPlay() override;
 
@@ -56,6 +64,8 @@ protected:
 	void LookMouse(const FInputActionValue& InputValue);
 
 	void PrimaryAttack();
+
+	void PrimaryInteract();
 
 public:	
 	virtual void Tick(float DeltaTime) override;

@@ -1,5 +1,6 @@
 #include "SExplosiveBarrel.h"
 
+#include "SMagicProjectile.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
 ASExplosiveBarrel::ASExplosiveBarrel()
@@ -27,6 +28,8 @@ void ASExplosiveBarrel::PostInitializeComponents()
 void ASExplosiveBarrel::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& HitResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnHit Fired!"));
-	RadialForce->FireImpulse();
+	if (OtherActor->IsA(ASMagicProjectile::StaticClass()))
+	{
+		RadialForce->FireImpulse();
+	}
 }
