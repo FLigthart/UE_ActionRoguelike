@@ -6,6 +6,7 @@
 #include "SItemChest.generated.h"
 
 class UStaticMeshComponent;
+class UParticleSystemComponent;
 
 UCLASS()
 class UE_ACTIONROGUELIKE_API ASItemChest : public AActor, public ISGameplayInterface
@@ -17,14 +18,20 @@ public:
 	UPROPERTY(EditAnywhere)
 	float TargetPitch;
 	
-	void Interact_Implementation(APawn* InstigatorPawn);
+	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 	
 protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UStaticMeshComponent> BaseMesh;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> LidMesh;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UStaticMeshComponent> GoldPileMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TObjectPtr<UParticleSystemComponent> GoldEffect;
 	
 	virtual void BeginPlay() override;
 

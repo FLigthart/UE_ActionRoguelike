@@ -10,6 +10,7 @@ class USpringArmComponent;
 class UInputMappingContext;
 class UInputAction;
 class USInteractionComponent;
+class UAnimMontage;
 struct FInputActionValue;
 
 
@@ -20,8 +21,15 @@ class UE_ACTIONROGUELIKE_API ASCharacter : public ACharacter
 
 protected:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AActor> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TObjectPtr<UAnimMontage> AttackAnim;
+
+	FTimerHandle TimerHandle_PrimaryAttack;
+
+	float PrimaryAttackDelay;
 	
 public:
 	ASCharacter();
@@ -64,6 +72,7 @@ protected:
 	void LookMouse(const FInputActionValue& InputValue);
 
 	void PrimaryAttack();
+	void PrimaryAttack_TimeElapsed();
 
 	void PrimaryInteract();
 

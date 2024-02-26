@@ -13,7 +13,7 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 	RadialForce = CreateDefaultSubobject<URadialForceComponent>("RadialForceComp");
 	RadialForce->SetupAttachment(RootComponent);
 
-	RadialForce->ImpulseStrength = 100.f;
+	RadialForce->ImpulseStrength = 1000.f;
 	RadialForce->Radius = 500.f;
 	RadialForce->bImpulseVelChange = true;
 }
@@ -30,6 +30,11 @@ void ASExplosiveBarrel::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 {
 	if (OtherActor->IsA(ASMagicProjectile::StaticClass()))
 	{
-		RadialForce->FireImpulse();
+		Explode();
 	}
+}
+
+void ASExplosiveBarrel::Explode()
+{
+	RadialForce->FireImpulse();
 }

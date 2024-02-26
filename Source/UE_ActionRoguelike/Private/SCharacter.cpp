@@ -24,6 +24,8 @@ ASCharacter::ASCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	
 	bUseControllerRotationYaw = false;
+
+	PrimaryAttackDelay = 0.2f;
 }
 
 void ASCharacter::BeginPlay()
@@ -92,15 +94,22 @@ void ASCharacter::LookMouse(const FInputActionValue& InputValue)
 
 void ASCharacter::PrimaryAttack()
 {
+	PlayAnimMontage(AttackAnim);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, PrimaryAttackDelay);
+}
+
+void ASCharacter::PrimaryAttack_TimeElapsed()
+{
 	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-	
-	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
-
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+ 	
+ 	FTransform SpawnTM = FTransform(GetControlRotation(), HandLocation);
+ 
+ 	FActorSpawnParameters SpawnParams;
+ 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParams.Instigator = this;
+ 	
+ 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }
 
 void ASCharacter::PrimaryInteract()

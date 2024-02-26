@@ -1,5 +1,7 @@
 #include "SItemChest.h"
 
+#include "Particles/ParticleSystemComponent.h"
+
 ASItemChest::ASItemChest()
 {
 
@@ -10,6 +12,13 @@ ASItemChest::ASItemChest()
 
 	LidMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LidMesh"));
 	LidMesh->SetupAttachment(BaseMesh);
+
+	GoldPileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GoldPileMesh"));
+	GoldPileMesh->SetupAttachment(BaseMesh);
+
+	GoldEffect = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("GoldEffect"));
+	GoldEffect->SetupAttachment(GoldPileMesh);
+	GoldEffect->SetAutoActivate(false);
 
 	TargetPitch = 110;
 }
@@ -32,4 +41,3 @@ void ASItemChest::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
