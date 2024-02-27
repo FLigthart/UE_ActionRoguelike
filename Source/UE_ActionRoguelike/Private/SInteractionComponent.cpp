@@ -1,25 +1,11 @@
 #include "SInteractionComponent.h"
 
 #include "SGameplayInterface.h"
+#include "Camera/CameraComponent.h"
 
 USInteractionComponent::USInteractionComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
-
 }
-
-
-void USInteractionComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-}
-
-void USInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-}
-
 
 void USInteractionComponent::PrimaryInteract()
 {
@@ -27,40 +13,39 @@ void USInteractionComponent::PrimaryInteract()
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 
 	AActor* MyOwner = GetOwner();
-	
-	FVector EyeLocation;
-	FRotator EyeRotation;
-	MyOwner->GetActorEyesViewPoint(EyeLocation, EyeRotation);
-	
-	FVector End = EyeLocation + (EyeRotation.Vector() * 250);
 
-	TArray<FHitResult> Hits;
+	UCameraComponent* PlayerCamera = MyOwner->FindComponentByClass<UCameraComponent>();
 
-	float Radius = 45.f;
-	FCollisionShape Shape;
-	Shape.SetSphere(Radius);
-	
-	bool bBlockingHit = GetWorld()->SweepMultiByObjectType(Hits, EyeLocation, End, FQuat::Identity, ObjectQueryParams, Shape);
-	
-	FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
-	
-	for (FHitResult Hit : Hits)
+	if (ensureAlways(PlayerCamera))
 	{
-		AActor* HitActor = Hit.GetActor();
-        if (HitActor)
-        {
-        	if(HitActor->Implements<USGameplayInterface>())
-        	{
-        		APawn* MyPawn = Cast<APawn>(MyOwner);
-        		
-        		ISGameplayInterface::Execute_Interact(HitActor, MyPawn);
-        		DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
-        		break;
-        	}
-        }
-	}
+		FVector Start = PlayerCamera->GetComponentLocation();
+		FRotator CameraRotation = PlayerCamera->GetComponentRotation();
+		FVector End = Start + (CameraRotation.Vector() * 350.f);
 	
-	DrawDebugLine(GetWorld(), EyeLocation, End, LineColor, false, 2.0f, 0, 2.0f);
+		TArray<FHitResult> Hits;
 
-
+		float Radius = 45.f;
+		FCollisionShape Shape;
+		Shape.SetSphere(Radius);
+	
+		bool bBlockingHit = GetWorld()->SweepMultiByObjectType(Hits, Start, End, FQuat::Identity, ObjectQueryParams, Shape);
+	
+		FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
+	
+		for (FHitResult Hit : Hits)
+		{
+			AActor* HitActor = Hit.GetActor();
+			if (HitActor)
+			{
+				if(HitActor->Implements<USGameplayInterface>())
+				{
+					APawn* MyPawn = Cast<APawn>(MyOwner);
+        		
+					ISGameplayInterface::Execute_Interact(HitActor, MyPawn);
+					DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
+					break;
+				}
+			}
+		}
+	}
 }

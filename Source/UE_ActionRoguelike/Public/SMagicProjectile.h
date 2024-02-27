@@ -1,14 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BaseAttack.h"
 #include "GameFramework/Actor.h"
 #include "SMagicProjectile.generated.h"
 
-class UProjectileMovementComponent;
-class USphereComponent;
-
 UCLASS()
-class UE_ACTIONROGUELIKE_API ASMagicProjectile : public AActor
+class UE_ACTIONROGUELIKE_API ASMagicProjectile : public ABaseAttack
 {
 	GENERATED_BODY()
 	
@@ -17,15 +15,8 @@ public:
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<USphereComponent> SphereComp;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UProjectileMovementComponent> MovementComp;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UParticleSystemComponent> EffectComp;
-
+	UFUNCTION()
+	void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 	virtual void BeginPlay() override;
 

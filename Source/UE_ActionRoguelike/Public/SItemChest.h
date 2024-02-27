@@ -32,11 +32,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UParticleSystemComponent> GoldEffect;
-	
-	virtual void BeginPlay() override;
 
 public:	
-	virtual void Tick(float DeltaTime) override;
 	
 	ASItemChest();
 };

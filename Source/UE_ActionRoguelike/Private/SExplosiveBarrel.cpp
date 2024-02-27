@@ -1,5 +1,6 @@
 #include "SExplosiveBarrel.h"
 
+#include "SAttributeComponent.h"
 #include "SMagicProjectile.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
@@ -16,6 +17,9 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 	RadialForce->ImpulseStrength = 1000.f;
 	RadialForce->Radius = 500.f;
 	RadialForce->bImpulseVelChange = true;
+	RadialForce->SetAutoActivate(false);
+
+	DamageAmount = -50.f;
 }
 
 void ASExplosiveBarrel::PostInitializeComponents()
@@ -28,9 +32,15 @@ void ASExplosiveBarrel::PostInitializeComponents()
 void ASExplosiveBarrel::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& HitResult)
 {
-	if (OtherActor->IsA(ASMagicProjectile::StaticClass()))
+	if (OtherActor->IsA(ABaseAttack::StaticClass()))
 	{
 		Explode();
+
+		USAttributeComponent* InteractionComp = OtherActor->GetInstigator()->GetComponentByClass<USAttributeComponent>();
+		if (InteractionComp)
+		{
+			InteractionComp->ApplyHealthChange(DamageAmount);
+		}
 	}
 }
 

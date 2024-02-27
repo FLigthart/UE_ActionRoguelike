@@ -25,12 +25,11 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& HitResult);
-
+	
 	UFUNCTION(BlueprintCallable)
 	void Explode();
 
 	virtual void PostInitializeComponents() override; 
 
-public:
-
+	float DamageAmount;
 };
