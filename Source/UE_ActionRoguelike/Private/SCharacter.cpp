@@ -179,7 +179,7 @@ FVector ASCharacter::PerformLineTrace(FTransform Start, float LineTraceLength, b
 	CollisionChannels.AddObjectTypesToQuery(ECC_PhysicsBody);
 	bool bDidHit = GetWorld()->LineTraceSingleByObjectType(Hit, Start.GetLocation(), End, CollisionChannels, Params);
 
-	DrawDebugLine(GetWorld(), Start.GetLocation(), End, FColor::Red, false, 5.f);
+	//DrawDebugLine(GetWorld(), Start.GetLocation(), End, FColor::Red, false, 5.f);
 	
 	return (bDidHit ? Hit.Location : End);
 }
@@ -192,7 +192,7 @@ void ASCharacter::PrimaryInteract()
 	}
 }
 
-void ASCharacter::BlackHoleAttack()
+void ASCharacter::BlackHoleAttack() //Implementation is in Blueprints
 {
 	if (ensureAlways(BlackHoleClass))
 	{
@@ -207,7 +207,7 @@ void ASCharacter::BlackHoleAttack()
 	}
 }
 
-//TODO: Make dash ability (see SDashProjectile)
+//This is only for calculating the path and spawning the DashProjectile. The usage is implemented in SDashProjectile
 void ASCharacter::DashAbility()
 {
 	if (ensureAlways(DashClass))
