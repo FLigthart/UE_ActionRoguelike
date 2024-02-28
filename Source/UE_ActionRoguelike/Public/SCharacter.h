@@ -37,13 +37,7 @@ protected:
 
 	FTimerHandle TimerHandle_PrimaryAttack;
 
-	FTimerHandle TimerHandle_DashExplode;
-	FTimerHandle TimerHandle_DashTeleport;
-
 	float PrimaryAttackDelay;
-
-	float DetonateDelay = 0.2f;
-	float TeleportDelay = 0.2f;
 	
 public:
 	ASCharacter();
@@ -96,6 +90,10 @@ protected:
 	
 	void LookMouse(const FInputActionValue& InputValue);
 
+	//This was for the ExplosiveBarrel. Might fix later
+	//UFUNCTION()
+	//virtual void TakeDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser ) override;
+
 	void PrimaryAttack();
 	void PrimaryAttack_TimeElapsed();
 	
@@ -107,8 +105,6 @@ protected:
 	void BlackHoleAttack();
 
 	void DashAbility(); //Gets called when the ability is used
-	void DashAbility_Detonation(); //Gets called after 0.2s after the ability is used. Ability Explodes.
-	void DashAbility_Dash(); //After another 0.2s the instigator teleports to the location of the projectile.
 
 public:	
 	virtual void Tick(float DeltaTime) override;

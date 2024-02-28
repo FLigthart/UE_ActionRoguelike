@@ -1,7 +1,7 @@
 #include "SExplosiveBarrel.h"
 
-#include "SAttributeComponent.h"
 #include "SMagicProjectile.h"
+#include "Kismet/GameplayStatics.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
 ASExplosiveBarrel::ASExplosiveBarrel()
@@ -34,17 +34,16 @@ void ASExplosiveBarrel::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 {
 	if (OtherActor->IsA(ABaseAttack::StaticClass()))
 	{
-		Explode();
-
-		USAttributeComponent* InteractionComp = OtherActor->GetInstigator()->GetComponentByClass<USAttributeComponent>();
-		if (InteractionComp)
-		{
-			InteractionComp->ApplyHealthChange(DamageAmount);
-		}
+		Explode(OtherActor);
 	}
 }
 
-void ASExplosiveBarrel::Explode()
+void ASExplosiveBarrel::Explode(AActor* DamageCauser)
 {
 	RadialForce->FireImpulse();
+	
+	/*TArray<AActor*> IgnoredActors;
+	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), DamageAmount, 5.f, GetActorLocation(),
+		RadialForce->Radius * 0.25f, RadialForce->Radius, 1.2f, UDamageType::StaticClass(),
+		IgnoredActors, DamageCauser);*/
 }

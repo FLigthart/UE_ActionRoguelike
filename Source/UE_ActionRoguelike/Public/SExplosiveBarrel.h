@@ -27,7 +27,7 @@ protected:
 		UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& HitResult);
 	
 	UFUNCTION(BlueprintCallable)
-	void Explode();
+	void Explode(AActor* DamageCauser);
 
 	virtual void PostInitializeComponents() override; 
 

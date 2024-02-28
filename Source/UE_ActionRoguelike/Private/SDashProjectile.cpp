@@ -1,24 +1,45 @@
 #include "SDashProjectile.h"
 
-#include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ASDashProjectile::ASDashProjectile()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
+	DetonateDelay = 0.2f;
+	TeleportDelay = 0.2f;
+	
 	MovementComp->InitialSpeed = 6000.f;
 }
 
-void ASDashProjectile::BeginPlay()
+void ASDashProjectile::PostInitializeComponents()
 {
-	Super::BeginPlay();
+	Super::PostInitializeComponents();
 	
+	GetWorldTimerManager().SetTimer(TimerHandle_DashExplode, this, &ASDashProjectile::Explode, 0.2f);
 }
 
-void ASDashProjectile::Tick(float DeltaTime)
+void ASDashProjectile::Explode_Implementation()
 {
-	Super::Tick(DeltaTime);
+	UE_LOG(LogTemp, Log, TEXT("Explode imp called"));
+	GetWorldTimerManager().ClearTimer(TimerHandle_DashExplode); //Clear timer if projectile hits something
 
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
+
+	MovementComp->StopMovementImmediately();
+	SetActorEnableCollision(false);
+	
+	GetWorldTimerManager().SetTimer(TimerHandle_DashTeleport, this, &ASDashProjectile::DashAbility_Dash, 0.2f);
+}
+
+void ASDashProjectile::DashAbility_Dash()
+{
+	AActor* ActorToTeleport = GetInstigator();
+	if (ensure(ActorToTeleport))
+	{
+		//Keep rotation of ActorToTeleport
+		ActorToTeleport->TeleportTo(GetActorLocation(), ActorToTeleport->GetActorRotation(), false, false);
+
+		Destroy();
+	}
 }
 

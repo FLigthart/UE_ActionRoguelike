@@ -40,6 +40,7 @@ void ASCharacter::BeginPlay()
 void ASCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+	//OnTakeAnyDamage.AddDynamic(this, &ASCharacter::TakeDamage); //For the explosive barrel
 }
 
 void ASCharacter::Tick(float DeltaTime)
@@ -101,6 +102,14 @@ void ASCharacter::LookMouse(const FInputActionValue& InputValue)
 	AddControllerYawInput(Value.X);
 	AddControllerPitchInput(Value.Y);
 }
+
+//TODO: Implement a proper way to take damage if the course doesn't do that. See that event in PostIni and SExplosiveBarrel
+/*void ASCharacter::TakeDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser )
+{
+	UE_LOG(LogTemp, Log, TEXT("Receive damage event triggered. Damage amount: %f"), Damage);
+	float ActualDamage = Super::TakeDamage(Damage, UDamageType::StaticClass(), InstigatedBy, DamageCauser);
+	AttributeComp->ApplyHealthChange(ActualDamage);
+}*/
 
 void ASCharacter::PrimaryAttack()
 {
@@ -211,23 +220,7 @@ void ASCharacter::DashAbility()
 		FActorSpawnParameters SpawnParams;
 		CalculateSpawnParams(HandLocation, &SpawnTransform, &SpawnParams, 5000.f,false);
 		
-		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
-		
-		GetWorldTimerManager().SetTimer(TimerHandle_DashExplode, this, &ASCharacter::DashAbility_Detonation, 0.2f);
+		GetWorld()->SpawnActor<AActor>(DashClass, SpawnTransform, SpawnParams);
 	}
-}
-
-void ASCharacter::DashAbility_Detonation()
-{
-	GetWorldTimerManager().ClearTimer(TimerHandle_DashExplode); //Clear timer if projectile hits something
-
-	//UGameplayStatics::SpawnEmitterAtLocation(this, ImpactVFX, GetActorLocation(), GetActorRotation());
-
-	
-	GetWorldTimerManager().SetTimer(TimerHandle_DashTeleport, this, &ASCharacter::DashAbility_Dash, 0.2f);
-}
-
-void ASCharacter::DashAbility_Dash()
-{
 }
 
