@@ -20,7 +20,6 @@ void ASDashProjectile::PostInitializeComponents()
 
 void ASDashProjectile::Explode_Implementation()
 {
-	UE_LOG(LogTemp, Log, TEXT("Explode imp called"));
 	GetWorldTimerManager().ClearTimer(TimerHandle_DashExplode); //Clear timer if projectile hits something
 
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());

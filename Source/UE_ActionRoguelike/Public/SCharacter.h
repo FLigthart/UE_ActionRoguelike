@@ -106,6 +106,8 @@ protected:
 
 	void DashAbility(); //Gets called when the ability is used
 
+	UFUNCTION()
+	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
 public:	
 	virtual void Tick(float DeltaTime) override;
 

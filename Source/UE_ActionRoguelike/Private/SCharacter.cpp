@@ -40,6 +40,8 @@ void ASCharacter::BeginPlay()
 void ASCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
 	//OnTakeAnyDamage.AddDynamic(this, &ASCharacter::TakeDamage); //For the explosive barrel
 }
 
@@ -47,6 +49,15 @@ void ASCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth,
+	float Delta)
+{
+	if (NewHealth <= 0.0f && Delta < 0.0f)
+	{
+		DisableInput(Cast<APlayerController>(GetController()));
+	}
 }
 
 void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -192,6 +203,7 @@ void ASCharacter::PrimaryInteract()
 	}
 }
 
+//TODO: Refactor BlackHoleAttack(), DashAbility() and PrimaryAttack_TimeElapsed() into one function with the class and socket as parameters.
 void ASCharacter::BlackHoleAttack() //Implementation is in Blueprints
 {
 	if (ensureAlways(BlackHoleClass))
@@ -223,4 +235,6 @@ void ASCharacter::DashAbility()
 		GetWorld()->SpawnActor<AActor>(DashClass, SpawnTransform, SpawnParams);
 	}
 }
+
+
 
