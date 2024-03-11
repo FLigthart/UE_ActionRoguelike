@@ -13,7 +13,11 @@ class UE_ACTIONROGUELIKE_API ASMagicProjectile : public ABaseAttack
 public:	
 	ASMagicProjectile();
 
+	void SetDamageAmount(float Damage);
 protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn="true"))
+	float DamageAmount;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UAudioComponent> AudioComp;
@@ -23,11 +27,9 @@ protected:
 	
 	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
-
+	
 	void DestroyProjectile();
 
-	UPROPERTY(EditAnywhere)
-	float DamageAmount;
 public:	
 	virtual void Tick(float DeltaTime) override;
 

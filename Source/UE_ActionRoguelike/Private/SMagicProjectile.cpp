@@ -18,6 +18,11 @@ ASMagicProjectile::ASMagicProjectile()
 	DamageAmount = 20.f;
 }
 
+void ASMagicProjectile::SetDamageAmount(float Damage)
+{
+	DamageAmount = Damage;
+}
+
 void ASMagicProjectile::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
