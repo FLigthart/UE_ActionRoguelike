@@ -36,5 +36,8 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "Attributes")
 	bool ApplyHealthChange(float Delta);
-	
+
+	FORCEINLINE float GetHealth() { return Health; };
+	FORCEINLINE float GetHealthMax() { return HealthMax; };
+	FORCEINLINE bool IsMaxHealth() { return FMath::IsNearlyEqual(Health, HealthMax); };
 };

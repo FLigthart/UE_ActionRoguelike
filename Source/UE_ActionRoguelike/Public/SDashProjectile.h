@@ -16,6 +16,12 @@ public:
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Teleport")
+	TObjectPtr<UParticleSystem> TeleportEnter;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Teleport")
+	TObjectPtr<UParticleSystem> TeleportExit;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Teleport")
 	float DetonateDelay;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Teleport")

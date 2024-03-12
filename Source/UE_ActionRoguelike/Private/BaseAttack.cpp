@@ -57,6 +57,11 @@ void ABaseAttack::Explode_Implementation() //Make sure ImpactVFX and ImpactSound
 		{
 			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, GetActorLocation());
 		}
+
+		if (CameraShakeAttack)
+		{
+			UGameplayStatics::PlayWorldCameraShake(this, CameraShakeAttack, GetActorLocation(), ImpactShakeInnerRadius, ImpactShakeOuterRadius);
+		}
 		
 		Destroy();
 	}

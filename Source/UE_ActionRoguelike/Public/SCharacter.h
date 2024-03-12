@@ -23,8 +23,11 @@ class UE_ACTIONROGUELIKE_API ASCharacter : public ACharacter
 
 protected:
 
-	UPROPERTY(EditAnywhere, Category = "Attack")
+	UPROPERTY(EditAnywhere, Category = "Attack|Projectile")
 	TSubclassOf<AActor> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack|Projectile")
+	TObjectPtr<UParticleSystem> CastEffect;
 	
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AActor> BlackHoleClass;
@@ -104,7 +107,7 @@ protected:
 
 	void BlackHoleAttack();
 
-	void DashAbility(); //Gets called when the ability is used
+	void DashAbility(); //Gets called when the dash ability is used
 
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);

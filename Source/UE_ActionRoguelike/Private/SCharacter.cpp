@@ -8,6 +8,7 @@
 #include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ASCharacter::ASCharacter()
 {
@@ -55,6 +56,15 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 	float Delta)
 {
 	GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+	if (Delta < 0) //Damage, red effect
+	{
+		GetMesh()->SetVectorParameterValueOnMaterials("HitFleshColor", FVector(1, 0, 0));
+	}
+	else //Healing, green effect
+	{
+		GetMesh()->SetVectorParameterValueOnMaterials("HitFleshColor", FVector(0, 1, 0));
+	}
+	
 	if (NewHealth <= 0.0f && Delta < 0.0f)
 	{
 		DisableInput(Cast<APlayerController>(GetController()));
@@ -126,6 +136,9 @@ void ASCharacter::LookMouse(const FInputActionValue& InputValue)
 void ASCharacter::PrimaryAttack()
 {
 	PlayAnimMontage(AttackAnim);
+
+	UGameplayStatics::SpawnEmitterAttached(CastEffect, GetMesh(), "Muzzle_01", FVector::ZeroVector,
+		FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
 	
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, PrimaryAttackDelay);
 }
