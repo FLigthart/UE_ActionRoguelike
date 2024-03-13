@@ -38,9 +38,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	TObjectPtr<UAnimMontage> AttackAnim;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Teleport")
+	TObjectPtr<UAnimMontage> TeleportMontage;
+
 	FTimerHandle TimerHandle_PrimaryAttack;
+	FTimerHandle TimerHandle_DashAbility;
 
 	float PrimaryAttackDelay;
+	float DashAbilityDelay;
+	float DashAbilityExitDelay;
 	
 public:
 	ASCharacter();
@@ -108,9 +114,12 @@ protected:
 	void BlackHoleAttack();
 
 	void DashAbility(); //Gets called when the dash ability is used
+	void DashAbility_TimeElapsed();
+	void DashAbility_Exit();
 
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
+	
 public:	
 	virtual void Tick(float DeltaTime) override;
 

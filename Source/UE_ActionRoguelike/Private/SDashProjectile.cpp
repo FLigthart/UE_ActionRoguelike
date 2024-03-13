@@ -1,6 +1,5 @@
 #include "SDashProjectile.h"
 
-#include "Camera/CameraComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -24,6 +23,7 @@ void ASDashProjectile::Explode_Implementation()
 	GetWorldTimerManager().ClearTimer(TimerHandle_DashExplode); //Clear timer if projectile hits something
 
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
+	
 	AActor* ActorToTeleport = GetInstigator();
 	if (ActorToTeleport)
 	{
@@ -38,21 +38,20 @@ void ASDashProjectile::Explode_Implementation()
 
 void ASDashProjectile::DashAbility_Dash()
 {
-	AActor* ActorToTeleport = GetInstigator();
-	if (ensure(ActorToTeleport))
+	APawn* CharacterInstigator = Cast<APawn>(GetInstigator());
+	if (ensure(CharacterInstigator))
 	{
 		//Keep rotation of ActorToTeleport
-		ActorToTeleport->TeleportTo(GetActorLocation(), ActorToTeleport->GetActorRotation(), false, false);
+		CharacterInstigator->TeleportTo(GetActorLocation(), CharacterInstigator->GetActorRotation(), false, false);
 
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TeleportExit, FTransform(ActorToTeleport->GetActorRotation(),
-	ActorToTeleport->GetActorLocation() + ActorToTeleport->GetActorForwardVector() * 50.f));
-		APawn* InstigatorPawn = Cast<APawn>(ActorToTeleport);
-		APlayerController* PC = Cast<APlayerController>(InstigatorPawn->GetController());
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TeleportExit, FTransform(CharacterInstigator->GetActorRotation(),
+			CharacterInstigator->GetActorLocation() + CharacterInstigator->GetActorForwardVector() * 50.f));
+		
+		APlayerController* PC = Cast<APlayerController>(CharacterInstigator->GetController());
 		if (PC && PC->IsLocalController())
 		{
 			PC->ClientStartCameraShake(CameraShakeAttack);
 		}
-
 	}
 	Destroy();
 }

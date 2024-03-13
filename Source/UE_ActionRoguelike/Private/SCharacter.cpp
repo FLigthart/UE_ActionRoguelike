@@ -30,12 +30,13 @@ ASCharacter::ASCharacter()
 	bUseControllerRotationYaw = false;
 
 	PrimaryAttackDelay = 0.2f;
+	DashAbilityDelay = 0.44f; //About the length of the intro animation.
+	DashAbilityExitDelay = 0.2f; //Time from spawn till teleportation
 }
 
 void ASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ASCharacter::PostInitializeComponents()
@@ -233,19 +234,35 @@ void ASCharacter::BlackHoleAttack() //Implementation is in Blueprints
 	}
 }
 
-//This is only for calculating the path and spawning the DashProjectile. The usage is implemented in SDashProjectile
+//This is only for calculating the path, animations on character and spawning the DashProjectile. The usage is implemented in SDashProjectile
 void ASCharacter::DashAbility()
 {
 	if (ensureAlways(DashClass))
 	{
-		PlayAnimMontage(AttackAnim);
-
-		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-
-		FTransform SpawnTransform;
-		FActorSpawnParameters SpawnParams;
-		CalculateSpawnParams(HandLocation, &SpawnTransform, &SpawnParams, 5000.f,false);
+		UGameplayStatics::SpawnEmitterAttached(CastEffect, GetMesh(), "Muzzle_01", FVector::ZeroVector,
+	FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
 		
-		GetWorld()->SpawnActor<AActor>(DashClass, SpawnTransform, SpawnParams);
+		PlayAnimMontage(TeleportMontage, 1, "IntroStart");
+
+		
+		GetWorldTimerManager().SetTimer(TimerHandle_DashAbility, this, &ASCharacter::DashAbility_TimeElapsed, DashAbilityDelay);
 	}
+}
+
+void ASCharacter::DashAbility_TimeElapsed()
+{
+	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+ 
+ 	FTransform SpawnTransform;
+ 	FActorSpawnParameters SpawnParams;
+ 	CalculateSpawnParams(HandLocation, &SpawnTransform, &SpawnParams, 5000.f,false);
+ 	
+ 	GetWorld()->SpawnActor<AActor>(DashClass, SpawnTransform, SpawnParams);
+	
+	GetWorldTimerManager().SetTimer(TimerHandle_DashAbility, this, &ASCharacter::DashAbility_Exit, DashAbilityExitDelay);
+}
+
+void ASCharacter::DashAbility_Exit()
+{
+	PlayAnimMontage(TeleportMontage, 1, "EndStart");
 }
