@@ -29,25 +29,28 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Attack|Projectile")
 	TObjectPtr<UParticleSystem> CastEffect;
 	
-	UPROPERTY(EditAnywhere, Category = "Attack")
+	UPROPERTY(EditAnywhere, Category = "Attack|BlackHole")
 	TSubclassOf<AActor> BlackHoleClass;
 
-	UPROPERTY(EditAnywhere, Category = "Attack")
+	UPROPERTY(EditAnywhere, Category = "Attack|Dash")
 	TSubclassOf<AActor> DashClass;
 
-	UPROPERTY(EditAnywhere, Category = "Attack")
+	UPROPERTY(EditAnywhere, Category = "Attack|Projectile")
 	TObjectPtr<UAnimMontage> AttackAnim;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Teleport")
+	UPROPERTY(EditDefaultsOnly, Category = "Teleport|Dash")
 	TObjectPtr<UAnimMontage> TeleportMontage;
 
 	FTimerHandle TimerHandle_PrimaryAttack;
 	FTimerHandle TimerHandle_DashAbility;
 
 	float PrimaryAttackDelay;
+	
 	float DashAbilityDelay;
 	float DashAbilityExitDelay;
-	
+
+	UPROPERTY(EditDefaultsOnly)
+	FName HandSocket;
 public:
 	ASCharacter();
 
@@ -78,13 +81,13 @@ protected:
 	TObjectPtr<UInputAction> Input_Dash;
 
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<USpringArmComponent> SpringArmComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UCameraComponent> CameraComp;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<USInteractionComponent> InteractionComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")

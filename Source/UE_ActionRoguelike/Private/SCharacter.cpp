@@ -32,6 +32,8 @@ ASCharacter::ASCharacter()
 	PrimaryAttackDelay = 0.2f;
 	DashAbilityDelay = 0.44f; //About the length of the intro animation.
 	DashAbilityExitDelay = 0.2f; //Time from spawn till teleportation
+
+	HandSocket = "Muzzle_01";
 }
 
 void ASCharacter::BeginPlay()
@@ -138,7 +140,7 @@ void ASCharacter::PrimaryAttack()
 {
 	PlayAnimMontage(AttackAnim);
 
-	UGameplayStatics::SpawnEmitterAttached(CastEffect, GetMesh(), "Muzzle_01", FVector::ZeroVector,
+	UGameplayStatics::SpawnEmitterAttached(CastEffect, GetMesh(), HandSocket, FVector::ZeroVector,
 		FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
 	
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, PrimaryAttackDelay);
@@ -149,7 +151,7 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 	if (ensureAlways(ProjectileClass))
 	{
 		//This is the start location of the actual projectile.
-		FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+		FVector HandLocation = GetMesh()->GetSocketLocation(HandSocket);
 
 		FTransform SpawnTransform;
 		FActorSpawnParameters SpawnParams;
@@ -239,7 +241,7 @@ void ASCharacter::DashAbility()
 {
 	if (ensureAlways(DashClass))
 	{
-		UGameplayStatics::SpawnEmitterAttached(CastEffect, GetMesh(), "Muzzle_01", FVector::ZeroVector,
+		UGameplayStatics::SpawnEmitterAttached(CastEffect, GetMesh(), HandSocket, FVector::ZeroVector,
 	FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
 		
 		PlayAnimMontage(TeleportMontage, 1, "IntroStart");
@@ -251,7 +253,7 @@ void ASCharacter::DashAbility()
 
 void ASCharacter::DashAbility_TimeElapsed()
 {
-	FVector HandLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	FVector HandLocation = GetMesh()->GetSocketLocation(HandSocket);
  
  	FTransform SpawnTransform;
  	FActorSpawnParameters SpawnParams;

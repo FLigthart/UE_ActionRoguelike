@@ -22,7 +22,7 @@ public:
 	void Interact(APawn* InstigatorPawn);
 	
 	FORCEINLINE void SetCanInteract(bool Value) { bCanInteract = Value; };
-	FORCEINLINE bool GetCanInteract() { return bCanInteract; }
+	FORCEINLINE bool GetCanInteract() { return bCanInteract; };
 
 private:
 	bool bCanInteract = true;
