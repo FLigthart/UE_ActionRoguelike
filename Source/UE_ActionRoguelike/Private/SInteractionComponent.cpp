@@ -38,12 +38,30 @@ void USInteractionComponent::PrimaryInteract()
 			if (HitActor)
 			{
 				ISGameplayInterface* GameplayInterface = Cast<ISGameplayInterface>(HitActor);
-				if (HitActor->Implements<USGameplayInterface>() && GameplayInterface && GameplayInterface->GetCanInteract())
+				if (HitActor->Implements<USGameplayInterface>())
 				{
-					APawn* MyPawn = Cast<APawn>(MyOwner);
+					/* Possibly the worst way I could've done this. HealthPotion inherits GameplayInterface and lever doesn't since it's in blueprints.
+					If it is the lever, cast will fail, so doesn't have to check if can interact. If it's a HealthPotion, goes inside if statement
+					and should check if CanInteract.
+					TODO: Implement a single way to handle GameplayInterface. (Find way to inherit GameplayInterface to blueprint, or do it without GameplayInterface).
+					*/
+					if (GameplayInterface)
+					{
+						if (GameplayInterface->GetCanInteract())
+						{
+							APawn* MyPawn = Cast<APawn>(MyOwner);
         		
-					ISGameplayInterface::Execute_Interact(HitActor, MyPawn);
-					break;
+							ISGameplayInterface::Execute_Interact(HitActor, MyPawn);
+							break;
+						}
+					}
+					else
+					{
+						APawn* MyPawn = Cast<APawn>(MyOwner);
+        		
+						ISGameplayInterface::Execute_Interact(HitActor, MyPawn);
+						break;
+					}
 				}
 			}
 		}

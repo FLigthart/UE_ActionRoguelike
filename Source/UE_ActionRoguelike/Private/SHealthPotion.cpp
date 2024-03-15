@@ -4,13 +4,12 @@
 
 ASHealthPotion::ASHealthPotion()
 {
-	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	RootComponent = MeshComp;
+	RespawnTime = 10.f;
 }
 
 void ASHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 {
-	if (!InstigatorPawn) return;
+	if (!ensure(InstigatorPawn)) return;
 
 	USAttributeComponent* InstigatorAttributeComp = InstigatorPawn->GetComponentByClass<USAttributeComponent>();
 	if (InstigatorAttributeComp && !InstigatorAttributeComp->IsMaxHealth())
@@ -23,20 +22,4 @@ void ASHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 	}
 }
 
-void ASHealthPotion::Disable()
-{
-	MeshComp->SetVisibility(false, true);
-
-	SetCanInteract(false);
-	
-	FTimerHandle TimerHandle;
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASHealthPotion::Reactivate, 10.f, false);
-}
-
-void ASHealthPotion::Reactivate()
-{
-	MeshComp->SetVisibility(true, true);
-
-	SetCanInteract(true);
-}
 

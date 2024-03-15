@@ -33,7 +33,11 @@ ASCharacter::ASCharacter()
 	DashAbilityDelay = 0.44f; //About the length of the intro animation.
 	DashAbilityExitDelay = 0.2f; //Time from spawn till teleportation
 
+	TimeToHitParamName = "TimeToHit";
+	HitFleshColorParamName = "HitFleshColor";
+	
 	HandSocket = "Muzzle_01";
+	SpineSocket = "spine_Socket";
 }
 
 void ASCharacter::BeginPlay()
@@ -58,14 +62,14 @@ void ASCharacter::Tick(float DeltaTime)
 void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth,
 	float Delta)
 {
-	GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+	GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 	if (Delta < 0) //Damage, red effect
 	{
-		GetMesh()->SetVectorParameterValueOnMaterials("HitFleshColor", FVector(1, 0, 0));
+		GetMesh()->SetVectorParameterValueOnMaterials(HitFleshColorParamName, FVector(1, 0, 0));
 	}
 	else //Healing, green effect
 	{
-		GetMesh()->SetVectorParameterValueOnMaterials("HitFleshColor", FVector(0, 1, 0));
+		GetMesh()->SetVectorParameterValueOnMaterials(HitFleshColorParamName, FVector(0, 1, 0));
 	}
 	
 	if (NewHealth <= 0.0f && Delta < 0.0f)
@@ -226,7 +230,7 @@ void ASCharacter::BlackHoleAttack() //Implementation is in Blueprints
 	if (ensureAlways(BlackHoleClass))
 	{
 		//This is the start location of the actual projectile.
-		FVector SpawnLocation = GetMesh()->GetSocketLocation("spine_Socket"); //Spawn about 40 cm from chest
+		FVector SpawnLocation = GetMesh()->GetSocketLocation(SpineSocket); //Spawn about 40 cm from chest
 
 		FTransform SpawnTransform;
 		FActorSpawnParameters SpawnParams;

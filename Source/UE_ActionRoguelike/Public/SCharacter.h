@@ -49,8 +49,17 @@ protected:
 	float DashAbilityDelay;
 	float DashAbilityExitDelay;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere, Category = "Parameter Names")
+	FName HitFleshColorParamName;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Parameter Names")
+	FName TimeToHitParamName;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Sockets")
 	FName HandSocket;
+
+	UPROPERTY(VisibleAnywhere, Category = "Sockets")
+	FName SpineSocket;
 public:
 	ASCharacter();
 
