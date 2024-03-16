@@ -34,23 +34,22 @@ void ASMagicProjectile::PostInitializeComponents()
 void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor && OtherActor != GetInstigator()) //If actor gets hit
+	if (OtherActor && OtherActor != GetInstigator()) //If actor gets hit. Should ignore projectiles.
 	{
 		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 		if (AttributeComp) //Apply damage if target has Attribute (health) component
 		{
 			AttributeComp->ApplyHealthChange(-DamageAmount);
-		}
-
+			UE_LOG(LogTemp, Warning, TEXT("Minion health: %f"), AttributeComp->GetHealth());
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
 		
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
-		
-		if (ImpactSound)
-		{
-			UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, GetActorLocation());
-		}
+			if (ImpactSound)
+			{
+				UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, GetActorLocation());
+			}
 			
-		Destroy();
+			Destroy();
+		}
 	}
 }
 
