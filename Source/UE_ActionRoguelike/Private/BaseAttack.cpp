@@ -67,9 +67,3 @@ void ABaseAttack::Explode_Implementation() //Make sure ImpactVFX and ImpactSound
 	}
 }
 
-void ABaseAttack::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-

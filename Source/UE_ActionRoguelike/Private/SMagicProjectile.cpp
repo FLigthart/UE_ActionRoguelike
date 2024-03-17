@@ -40,7 +40,6 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 		if (AttributeComp) //Apply damage if target has Attribute (health) component
 		{
 			AttributeComp->ApplyHealthChange(-DamageAmount);
-			UE_LOG(LogTemp, Warning, TEXT("Minion health: %f"), AttributeComp->GetHealth());
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
 		
 			if (ImpactSound)

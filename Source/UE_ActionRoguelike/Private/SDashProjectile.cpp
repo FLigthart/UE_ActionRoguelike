@@ -2,6 +2,7 @@
 
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 
 ASDashProjectile::ASDashProjectile()
 {
@@ -9,6 +10,12 @@ ASDashProjectile::ASDashProjectile()
 	TeleportDelay = 0.2f;
 	
 	MovementComp->InitialSpeed = 6000.f;
+
+	CharacterInstigator = nullptr;
+	
+	bShouldInterpolate = false;
+
+	DashDuration = 0.1f;
 }
 
 void ASDashProjectile::PostInitializeComponents()
@@ -38,21 +45,52 @@ void ASDashProjectile::Explode_Implementation()
 
 void ASDashProjectile::DashAbility_Dash()
 {
-	APawn* CharacterInstigator = Cast<APawn>(GetInstigator());
+	CharacterInstigator = Cast<APawn>(GetInstigator());
+	
 	if (ensure(CharacterInstigator))
 	{
-		//Keep rotation of ActorToTeleport
-		CharacterInstigator->TeleportTo(GetActorLocation(), CharacterInstigator->GetActorRotation(), false, false);
+		OldLocation = CharacterInstigator->GetActorLocation(); //Location of pawn
+		NewLocation = GetActorLocation(); //Location of dash projectile
 
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TeleportExit, FTransform(CharacterInstigator->GetActorRotation(),
-			CharacterInstigator->GetActorLocation() + CharacterInstigator->GetActorForwardVector() * 50.f));
+		StartTime = GetWorld()->GetTimeSeconds();
+
+		EffectComp->Deactivate();
 		
-		APlayerController* PC = Cast<APlayerController>(CharacterInstigator->GetController());
-		if (PC && PC->IsLocalController())
+		bShouldInterpolate = true;
+	}
+}
+
+void ASDashProjectile::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (bShouldInterpolate)
+	{
+
+		float Alpha = (GetWorld()->GetTimeSeconds() - StartTime) / DashDuration;
+		
+		CharacterInstigator->TeleportTo(FMath::Lerp(OldLocation, NewLocation, Alpha), CharacterInstigator->GetActorRotation(), false, false);
+		
+		if (FMath::IsNearlyEqual(Alpha, 1) || Alpha > 1.0f)
 		{
-			PC->ClientStartCameraShake(CameraShakeAttack);
+			DashAbility_Finished();
+			bShouldInterpolate = false;
 		}
 	}
+}
+
+void ASDashProjectile::DashAbility_Finished()
+{
+	APlayerController* PC = Cast<APlayerController>(CharacterInstigator->GetController());
+	if (PC && PC->IsLocalController())
+	{
+		PC->ClientStartCameraShake(CameraShakeAttack);
+	}
+
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TeleportExit, FTransform(CharacterInstigator->GetActorRotation(),
+	CharacterInstigator->GetActorLocation() + CharacterInstigator->GetActorForwardVector() * 50.f));
+	
 	Destroy();
 }
+
 
