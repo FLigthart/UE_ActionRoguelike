@@ -64,14 +64,13 @@ void ASDashProjectile::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (bShouldInterpolate)
+	if (bShouldInterpolate) //Should character "slowly" teleport
 	{
-
 		float Alpha = (GetWorld()->GetTimeSeconds() - StartTime) / DashDuration;
 		
 		CharacterInstigator->TeleportTo(FMath::Lerp(OldLocation, NewLocation, Alpha), CharacterInstigator->GetActorRotation(), false, false);
 		
-		if (FMath::IsNearlyEqual(Alpha, 1) || Alpha > 1.0f)
+		if (FMath::IsNearlyEqual(Alpha, 1) || Alpha > 1.0f) //1 == 100%, so interpolating finished.
 		{
 			DashAbility_Finished();
 			bShouldInterpolate = false;
