@@ -48,7 +48,4 @@ protected:
 	void Explode();
 
 	virtual void PostInitializeComponents() override;
-	
-public:	
-	virtual void BeginPlay() override;
 };

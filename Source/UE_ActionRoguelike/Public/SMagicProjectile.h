@@ -29,8 +29,4 @@ protected:
 	virtual void BeginPlay() override;
 	
 	void DestroyProjectile();
-
-public:	
-	virtual void Tick(float DeltaTime) override;
-
 };

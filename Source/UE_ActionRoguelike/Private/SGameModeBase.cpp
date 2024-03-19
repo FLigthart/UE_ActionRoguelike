@@ -21,6 +21,23 @@ void ASGameModeBase::StartPlay()
 
 void ASGameModeBase::SpawnBotTimerElapsed()
 {
+	int32 NrOfAliveBots = 0;
+	for (TActorIterator<ASAICharacter> It(GetWorld()); It; ++It) //Count number of bots in level
+	{
+		ASAICharacter* Bot = *It;
+
+		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(Bot->GetComponentByClass(USAttributeComponent::StaticClass()));
+		if (AttributeComp)
+		{
+			NrOfAliveBots++;
+		}
+	}
+	
+	if (NrOfAliveBots >= MaxBotCount) //Maximum amount of bots reached. So don't run query.
+	{
+		return;
+	}
+	
 	FEnvQueryRequest Request(SpawnBotQuery, this);
 	Request.Execute(EEnvQueryRunMode::RandomBest5Pct, this, &ASGameModeBase::OnBotSpawnQueryCompleted);
 }
@@ -33,26 +50,10 @@ void ASGameModeBase::OnBotSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result
 		UE_LOG(LogTemp, Warning, TEXT("Spawn Bot EQS Query Failed!"));
 		return;
 	}
-
-	int32 NrOfAliveBots = 0;
-	for (TActorIterator<ASAICharacter> It(GetWorld()); It; ++It) //Count number of bots in level
-	{
-		ASAICharacter* Bot = *It;
-
-		USAttributeComponent* AttributeComp = Cast<USAttributeComponent>(Bot->GetComponentByClass(USAttributeComponent::StaticClass()));
-		if (AttributeComp)
-		{
-			NrOfAliveBots++;
-		}
-	}
+	
 	if (DifficultyCurve)
 	{
 		MaxBotCount = DifficultyCurve->GetFloatValue(GetWorld()->TimeSeconds);
-	}
-	
-	if (NrOfAliveBots >= MaxBotCount)
-	{
-		return;
 	}
 	
 	// Retrieve all possible locations that passed the query

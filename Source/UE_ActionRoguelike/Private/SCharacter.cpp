@@ -1,5 +1,6 @@
 #include "UE_ActionRoguelike/Public/SCharacter.h"
 
+#include "EngineUtils.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
@@ -12,8 +13,6 @@
 
 ASCharacter::ASCharacter()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
 	SpringArmComp = CreateDefaultSubobject<USpringArmComponent>("SpringArmComp");
 	SpringArmComp->bUsePawnControlRotation = true;
 	SpringArmComp->SetupAttachment(RootComponent);
@@ -40,11 +39,6 @@ ASCharacter::ASCharacter()
 	SpineSocket = "spine_Socket";
 }
 
-void ASCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
 void ASCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
@@ -53,17 +47,11 @@ void ASCharacter::PostInitializeComponents()
 	//OnTakeAnyDamage.AddDynamic(this, &ASCharacter::TakeDamage); //For the explosive barrel
 }
 
-void ASCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
 void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth,
 	float Delta)
 {
 	GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
-	if (Delta < 0) //Damage, red effect
+	if (Delta <= 0) //Damage, red effect
 	{
 		GetMesh()->SetVectorParameterValueOnMaterials(HitFleshColorParamName, FVector(1, 0, 0));
 	}
@@ -97,7 +85,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	InputComp->BindAction(Input_Move, ETriggerEvent::Triggered, this, &ASCharacter::Move);
 	InputComp->BindAction(Input_Look, ETriggerEvent::Triggered, this, &ASCharacter::LookMouse);
 	InputComp->BindAction(Input_Jump, ETriggerEvent::Started, this, &ASCharacter::Jump);
-	InputComp->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this,  &ASCharacter::PrimaryAttack);
+	InputComp->BindAction(Input_PrimaryAttack, ETriggerEvent::Started, this,  &ASCharacter::PrimaryAttack);
 	InputComp->BindAction(Input_PrimaryInteract, ETriggerEvent::Started, this,  &ASCharacter::PrimaryInteract);
 	InputComp->BindAction(Input_BlackHole, ETriggerEvent::Started, this,  &ASCharacter::BlackHoleAttack);
 	InputComp->BindAction(Input_Dash, ETriggerEvent::Started, this,  &ASCharacter::DashAbility);
@@ -142,6 +130,13 @@ void ASCharacter::LookMouse(const FInputActionValue& InputValue)
 
 void ASCharacter::PrimaryAttack()
 {
+	if (bIsPrimaryAttacking) //Return if already attacking to prevent attack spamming.
+	{
+		return;
+	}
+
+	bIsPrimaryAttacking = true;
+	
 	PlayAnimMontage(AttackAnim);
 
 	UGameplayStatics::SpawnEmitterAttached(CastEffect, GetMesh(), HandSocket, FVector::ZeroVector,
@@ -159,14 +154,16 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 
 		FTransform SpawnTransform;
 		FActorSpawnParameters SpawnParams;
-		CalculateSpawnParams(HandLocation, &SpawnTransform, &SpawnParams, 5000.f,false);
+		CalculateSpawnParams(HandLocation, &SpawnTransform, &SpawnParams, 5000.f, false);
 		
 		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
 	}
+	
+	bIsPrimaryAttacking = false;
 }
 
 //Calculates the Spawn parameters for a spawn location, given the player is aiming with the middle of the screen (crosshair)
-void ASCharacter::CalculateSpawnParams(FVector SpawnLocation, FTransform* SpawnTransform, FActorSpawnParameters* SpawnParams, float LineTraceLength,bool bIsStraight)
+void ASCharacter::CalculateSpawnParams(FVector SpawnLocation, FTransform* SpawnTransform, FActorSpawnParameters* SpawnParams, float LineTraceLength, bool bIsStraight)
 {
 	//The start location of the line trace is the middle of the screen.
 	FTransform Start = FTransform(CameraComp->GetComponentRotation(), CameraComp->GetComponentLocation());

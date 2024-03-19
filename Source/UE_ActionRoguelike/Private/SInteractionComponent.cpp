@@ -11,6 +11,7 @@ void USInteractionComponent::PrimaryInteract()
 {
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_GameTraceChannel1); //The powerup channel
 
 	AActor* MyOwner = GetOwner();
 

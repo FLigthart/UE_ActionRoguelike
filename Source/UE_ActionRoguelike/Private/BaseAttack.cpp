@@ -8,7 +8,6 @@
 
 ABaseAttack::ABaseAttack()
 {
-	PrimaryActorTick.bCanEverTick = true;
 
 	SphereComp = CreateDefaultSubobject<USphereComponent>("SphereComp");
 	SphereComp->SetCollisionProfileName("Projectile");
@@ -30,12 +29,6 @@ void ABaseAttack::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	SphereComp->OnComponentHit.AddDynamic(this, &ABaseAttack::OnComponentHit);
-}
-
-void ABaseAttack::BeginPlay()
-{
-	Super::BeginPlay();
-	
 }
 
 void ABaseAttack::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,

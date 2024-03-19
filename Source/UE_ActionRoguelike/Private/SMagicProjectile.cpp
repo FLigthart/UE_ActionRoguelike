@@ -13,7 +13,8 @@ ASMagicProjectile::ASMagicProjectile()
 	
 	PrimaryActorTick.bCanEverTick = true;
 	
-	MovementComp->InitialSpeed = 1000.f;
+	MovementComp->InitialSpeed = 8000.f;
+	MovementComp->MaxSpeed = 8000.f;
 
 	DamageAmount = 20.f;
 }
@@ -67,10 +68,4 @@ void ASMagicProjectile::DestroyProjectile()
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactSound, GetActorLocation());
 	SetLifeSpan(0.2f);
-}
-
-void ASMagicProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
