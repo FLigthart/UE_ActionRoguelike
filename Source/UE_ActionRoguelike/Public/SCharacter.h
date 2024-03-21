@@ -133,6 +133,15 @@ protected:
 public:	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	
+	/*
+	 *	Console Commands
+	 */
+	
+	UFUNCTION(Exec)
+	void HealSelf(float Amount = 100.f);
+	
 private:
+	
 	bool bIsPrimaryAttacking = false;
 };

@@ -65,3 +65,20 @@ void ASGameModeBase::OnBotSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result
 		GetWorld()->SpawnActor<AActor>(MinionClass, Locations[0], FRotator::ZeroRotator);
 	}
 }
+
+/*
+ *	Console Commands
+ */	
+void ASGameModeBase::KillAll()
+{
+	for (TActorIterator<ASAICharacter> It(GetWorld()); It; ++It) //Count number of bots in level
+		{
+		ASAICharacter* Bot = *It;
+
+		USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(Bot);
+		if (ensure(AttributeComp) && AttributeComp->IsAlive())
+		{
+			AttributeComp->Kill(this); // TODO: Pass in player(?) for kill credit
+		}
+	}
+}

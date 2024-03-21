@@ -41,4 +41,7 @@ protected:
 	void SpawnBotTimerElapsed();
 	
 	void OnBotSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
+
+	UFUNCTION(Exec)
+	void KillAll();
 };

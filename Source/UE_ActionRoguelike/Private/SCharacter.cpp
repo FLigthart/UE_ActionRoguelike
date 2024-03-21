@@ -91,6 +91,19 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	InputComp->BindAction(Input_Dash, ETriggerEvent::Started, this,  &ASCharacter::DashAbility);
 }
 
+/*
+ *	Console Commands
+ */
+
+void ASCharacter::HealSelf(float Amount /* = 100 */)
+{
+	AttributeComp->ApplyHealthChange(this, Amount);
+}
+
+/*
+ * End of Console Commands
+ */
+
 void ASCharacter::Move(const FInputActionValue& InputValue)
 {
 	FRotator ControlRot = GetControlRotation();

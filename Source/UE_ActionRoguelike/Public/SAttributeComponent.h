@@ -33,6 +33,9 @@ protected:
 	//Stamina, Strength
 	
 public:	
+
+	UFUNCTION(BlueprintCallable)
+	bool Kill(AActor* InstigatorActor);
 	
 	UPROPERTY(BlueprintAssignable, Transient)
 	FOnHealthChanged OnHealthChanged;
