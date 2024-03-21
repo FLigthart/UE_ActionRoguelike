@@ -16,7 +16,7 @@ void ASHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 	{
 		ISGameplayInterface::Interact_Implementation(InstigatorPawn);
 
-		InstigatorAttributeComp->ApplyHealthChange(25.0f);
+		InstigatorAttributeComp->ApplyHealthChange(this, 25.0f);
 		
 		Disable();
 	}

@@ -6,6 +6,8 @@
 
 ASDashProjectile::ASDashProjectile()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	
 	DetonateDelay = 0.2f;
 	TeleportDelay = 0.2f;
 	
@@ -28,7 +30,7 @@ void ASDashProjectile::PostInitializeComponents()
 void ASDashProjectile::Explode_Implementation()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle_DashExplode); //Clear timer if projectile hits something
-
+	
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
 	
 	AActor* ActorToTeleport = GetInstigator();
@@ -46,7 +48,6 @@ void ASDashProjectile::Explode_Implementation()
 void ASDashProjectile::DashAbility_Dash()
 {
 	CharacterInstigator = Cast<APawn>(GetInstigator());
-	
 	if (ensure(CharacterInstigator))
 	{
 		OldLocation = CharacterInstigator->GetActorLocation(); //Location of pawn

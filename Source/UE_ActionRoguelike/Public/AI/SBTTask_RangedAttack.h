@@ -14,5 +14,15 @@ class UE_ACTIONROGUELIKE_API USBTTask_RangedAttack : public UBTTaskNode
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "AI")
+	float MaxBulletSpreadUp;
+
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float MaxBulletSpreadSideways;
+	
+	UPROPERTY(EditAnywhere, Category = "AI")
 	TSubclassOf<AActor> ProjectileClass;
+
+public:
+
+	USBTTask_RangedAttack();
 };

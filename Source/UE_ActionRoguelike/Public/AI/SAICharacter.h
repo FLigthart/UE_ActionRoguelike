@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "SAICharacter.generated.h"
 
+class USWorldUserWidget;
 class USAttributeComponent;
 class UPawnSensingComponent;
 
@@ -17,6 +18,11 @@ public:
 
 protected:
 
+	TObjectPtr<USWorldUserWidget> ActiveHealthBar;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> HealthBarWidgetClass;
+	
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UPawnSensingComponent> PawnSensingComp;
 
@@ -30,6 +36,8 @@ protected:
 	FName TimeToHitParamName;
 
 	virtual void PostInitializeComponents() override;
+
+	void SetTargetActor(AActor* NewTarget);
 	
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
