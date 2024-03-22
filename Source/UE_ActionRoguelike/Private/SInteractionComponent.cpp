@@ -3,6 +3,9 @@
 #include "SGameplayInterface.h"
 #include "Camera/CameraComponent.h"
 
+static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(TEXT("ar.InteractionDebugDraw"),
+	false, TEXT("Enable Debug Lines for Interact Component"), ECVF_Cheat);
+
 USInteractionComponent::USInteractionComponent()
 {
 }
@@ -32,12 +35,22 @@ void USInteractionComponent::PrimaryInteract()
 		bool bBlockingHit = GetWorld()->SweepMultiByObjectType(Hits, Start, End, FQuat::Identity, ObjectQueryParams, Shape);
 	
 		FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
-	
+
+		if (CVarDebugDrawInteraction.GetValueOnGameThread())
+		{
+			DrawDebugLine(GetWorld(), Start, End, LineColor, false, 2.0f, 0, 2.0f);
+		}
+		
 		for (FHitResult Hit : Hits)
 		{
 			AActor* HitActor = Hit.GetActor();
 			if (HitActor)
 			{
+				if (CVarDebugDrawInteraction.GetValueOnGameThread())
+				{
+					DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
+				}
+					
 				ISGameplayInterface* GameplayInterface = Cast<ISGameplayInterface>(HitActor);
 				if (HitActor->Implements<USGameplayInterface>())
 				{

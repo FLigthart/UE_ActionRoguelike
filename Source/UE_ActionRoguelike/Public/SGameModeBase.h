@@ -18,6 +18,10 @@ public:
 	
 	virtual void StartPlay() override;
 
+	UFUNCTION(Exec)
+	void KillAll();
+
+	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
@@ -42,6 +46,9 @@ protected:
 	
 	void OnBotSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
 
-	UFUNCTION(Exec)
-	void KillAll();
+	UFUNCTION()
+	void RespawnPlayerElapsed(AController* Controller);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Respawn")
+	float RespawnDelay;
 };

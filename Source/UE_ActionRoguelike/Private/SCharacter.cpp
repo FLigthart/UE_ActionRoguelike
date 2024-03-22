@@ -8,6 +8,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -60,9 +61,10 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 		GetMesh()->SetVectorParameterValueOnMaterials(HitFleshColorParamName, FVector(0, 1, 0));
 	}
 	
-	if (NewHealth <= 0.0f && Delta < 0.0f)
+	if (NewHealth <= 0.0f && Delta < 0.0f) //Die
 	{
 		DisableInput(Cast<APlayerController>(GetController()));
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }
 
