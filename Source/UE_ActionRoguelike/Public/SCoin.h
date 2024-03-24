@@ -11,7 +11,8 @@ class UE_ACTIONROGUELIKE_API ASCoin : public ASPowerupActor
 
 public:
 	ASCoin();
-	
+
+	virtual void BeginPlay() override;
 protected:
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 

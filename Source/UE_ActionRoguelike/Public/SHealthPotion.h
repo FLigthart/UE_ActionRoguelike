@@ -15,6 +15,8 @@ public:
 	
 	ASHealthPotion();
 
+	virtual void BeginPlay() override;
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Credits")

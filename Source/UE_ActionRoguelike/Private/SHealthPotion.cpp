@@ -8,6 +8,15 @@ ASHealthPotion::ASHealthPotion()
 	RespawnTime = 10.f;
 
 	CreditCost = 50;
+
+	PowerupSpawnRate = 0.05f;
+}
+
+void ASHealthPotion::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 25.f));
 }
 
 void ASHealthPotion::Interact_Implementation(APawn* InstigatorPawn)

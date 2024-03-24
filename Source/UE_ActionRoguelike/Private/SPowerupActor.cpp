@@ -14,6 +14,13 @@ ASPowerupActor::ASPowerupActor()
 	SphereComp->SetupAttachment(RootComponent);
 
 	RespawnTime = 10.f;
+
+	PowerupSpawnRate = 0.025f;
+}
+
+float ASPowerupActor::GetPowerupSpawnRate()
+{
+	return PowerupSpawnRate;
 }
 
 void ASPowerupActor::Interact_Implementation(APawn* InstigatorPawn)

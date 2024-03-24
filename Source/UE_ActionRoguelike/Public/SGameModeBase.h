@@ -4,6 +4,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "SGameModeBase.generated.h"
 
+class ASPowerupActor;
 struct FEnvQueryResult;
 class UEnvQuery;
 
@@ -41,10 +42,23 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	float SpawnTimerInterval;
 
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Powerups")
+	TObjectPtr<UEnvQuery> PowerupsQuery;
+
+	/* All power-up classes used to spawn with EQS at match start */
+	UPROPERTY(EditDefaultsOnly, Category = "Powerups")
+	TArray<TSubclassOf<ASPowerupActor>> PowerupClasses;
+
 	UFUNCTION()
 	void SpawnBotTimerElapsed();
 	
 	void OnBotSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
+
+	UFUNCTION()
+	void SpawnPowerups();
+	void OnPowerupSpawnQueryCompleted(TSharedPtr<FEnvQueryResult> Result);
+	TArray<int32> SpawnPowerupsOfType(TSubclassOf<ASPowerupActor> PowerupType, float SpawnRate, TArray<FVector> Locations); //Spawn Powerups of type and Spawn Rate. Returns used locations.
 
 	UFUNCTION()
 	void RespawnPlayerElapsed(AController* Controller);
