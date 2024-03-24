@@ -14,4 +14,9 @@ public:
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 	
 	ASHealthPotion();
+
+protected:
+
+	UPROPERTY(EditDefaultsOnly, Category = "Credits")
+	int32 CreditCost;
 };

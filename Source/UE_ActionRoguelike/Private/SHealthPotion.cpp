@@ -1,10 +1,13 @@
 #include "SHealthPotion.h"
 
 #include "SAttributeComponent.h"
+#include "SPlayerState.h"
 
 ASHealthPotion::ASHealthPotion()
 {
 	RespawnTime = 10.f;
+
+	CreditCost = 50;
 }
 
 void ASHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
@@ -14,11 +17,15 @@ void ASHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 	USAttributeComponent* InstigatorAttributeComp = InstigatorPawn->GetComponentByClass<USAttributeComponent>();
 	if (InstigatorAttributeComp && !InstigatorAttributeComp->IsMaxHealth())
 	{
-		ISGameplayInterface::Interact_Implementation(InstigatorPawn);
-
-		InstigatorAttributeComp->ApplyHealthChange(this, 25.0f);
-		
-		Disable();
+		if (ASPlayerState* PS = InstigatorPawn->GetPlayerState<ASPlayerState>())
+		{
+			if (PS->RemoveCredits(CreditCost) && InstigatorAttributeComp->ApplyHealthChange(this, 25.0f))
+			{
+				ISGameplayInterface::Interact_Implementation(InstigatorPawn);
+			
+				Disable();
+			}
+		}
 	}
 }
 

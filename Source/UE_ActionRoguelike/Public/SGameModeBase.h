@@ -51,4 +51,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Respawn")
 	float RespawnDelay;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Credits")
+	int32 CreditsForKill;
 };

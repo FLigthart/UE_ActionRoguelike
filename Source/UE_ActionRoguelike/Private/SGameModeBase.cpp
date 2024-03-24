@@ -3,6 +3,7 @@
 #include "EngineUtils.h"
 #include "SAttributeComponent.h"
 #include "SCharacter.h"
+#include "SPlayerState.h"
 #include "AI/SAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 
@@ -16,6 +17,10 @@ ASGameModeBase::ASGameModeBase()
 	MaxBotCount = 10;
 
 	RespawnDelay = 2.0f;
+
+	PlayerStateClass = ASPlayerState::StaticClass();
+
+	CreditsForKill = 20;
 }
 
 void ASGameModeBase::StartPlay()
@@ -90,16 +95,23 @@ void ASGameModeBase::RespawnPlayerElapsed(AController* Controller)
 
 void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 {
-	ASCharacter* Player = Cast<ASCharacter>(VictimActor);
+	if (ASCharacter* Player = Cast<ASCharacter>(VictimActor))
 	{
-		if (Player)
-		{
-			FTimerHandle TimerHandle_RespawnDelay;
+		FTimerHandle TimerHandle_RespawnDelay;
 
-			FTimerDelegate Delegate;
-			Delegate.BindUFunction(this, "RespawnPlayerElapsed", Player->GetController());
-			
-			GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
+		FTimerDelegate Delegate;
+		Delegate.BindUFunction(this, "RespawnPlayerElapsed", Player->GetController());
+		
+		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
+	}
+
+	APawn* KillerPawn = Cast<APawn>(Killer);
+	if (KillerPawn && KillerPawn != VictimActor) //Victim can't be the killer
+	{
+		ASPlayerState* PS = KillerPawn->GetPlayerState<ASPlayerState>();
+		if (PS) //AI will be nullptr.
+		{
+			PS->AddCredits(CreditsForKill);
 		}
 	}
 }
