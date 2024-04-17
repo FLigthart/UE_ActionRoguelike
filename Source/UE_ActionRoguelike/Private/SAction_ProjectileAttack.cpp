@@ -12,13 +12,6 @@ USAction_ProjectileAttack::USAction_ProjectileAttack()
 
 void USAction_ProjectileAttack::StartAction_Implementation(AActor* InstigatorActor)
 {
-	if (bIsAttacking) //Return if already attacking to prevent attack spamming.
-	{
-		return;
-	}
-
-	bIsAttacking = true;
-	
 	Super::StartAction_Implementation(InstigatorActor);
 
 	Instigator = Cast<ACharacter>(InstigatorActor);
@@ -40,18 +33,16 @@ void USAction_ProjectileAttack::AttackDelay_Elapsed()
 	if (ensureAlways(ProjectileClass))
 	{
 		//This is the start location of the actual projectile.
-		FVector HandLocation = Instigator->GetMesh()->GetSocketLocation(SpawnSocket);
+		FVector SpawnLocation = Instigator->GetMesh()->GetSocketLocation(SpawnSocket);
 
 		FTransform SpawnTransform;
 		FActorSpawnParameters SpawnParams;
-		CalculateSpawnParams(HandLocation, &SpawnTransform, &SpawnParams, 5000.f, false);
+		CalculateSpawnParams(SpawnLocation, &SpawnTransform, &SpawnParams, 5000.f, false);
 		
 		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
 	}
 
 	StopAction(Instigator);
-
-	bIsAttacking = false;
 }
 
 //Calculates the Spawn parameters for a spawn location, given the player is aiming with the middle of the screen (crosshair)

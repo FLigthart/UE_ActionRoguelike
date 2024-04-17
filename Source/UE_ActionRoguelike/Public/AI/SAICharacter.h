@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "SAICharacter.generated.h"
 
+class USActionComponent;
 class USWorldUserWidget;
 class USAttributeComponent;
 class UPawnSensingComponent;
@@ -28,6 +29,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USAttributeComponent> AttributeComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<USActionComponent> ActionComp;
 
 	UPROPERTY(VisibleAnywhere, Category = "Parameter Names")
 	FName HitFleshColorParamName;

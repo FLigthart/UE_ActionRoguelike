@@ -10,6 +10,8 @@ USAction_BlackHoleAttack::USAction_BlackHoleAttack()
 
 void USAction_BlackHoleAttack::StartAction_Implementation(AActor* InstigatorActor)
 {
+	USAction::StartAction_Implementation(InstigatorActor);
+	
 	Instigator = Cast<ACharacter>(InstigatorActor);
 	
 	if (ensure(Instigator && ProjectileClass))
