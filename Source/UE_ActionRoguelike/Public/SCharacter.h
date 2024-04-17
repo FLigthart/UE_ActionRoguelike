@@ -1,9 +1,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SCharInfoInterface.h"
 #include "GameFramework/Character.h"
 #include "SCharacter.generated.h"
 
+class USActionComponent;
 class USAttributeComponent;
 class UParticleEmitter;
 class UCameraComponent;
@@ -17,49 +19,17 @@ struct FInputActionValue;
 
 
 UCLASS()
-class UE_ACTIONROGUELIKE_API ASCharacter : public ACharacter
+class UE_ACTIONROGUELIKE_API ASCharacter : public ACharacter, public ISCharInfoInterface
 {
 	GENERATED_BODY()
 
 protected:
-
-	UPROPERTY(EditAnywhere, Category = "Attack|Projectile")
-	TSubclassOf<AActor> ProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack|Projectile")
-	TObjectPtr<UParticleSystem> CastEffect;
-	
-	UPROPERTY(EditAnywhere, Category = "Attack|BlackHole")
-	TSubclassOf<AActor> BlackHoleClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack|Dash")
-	TSubclassOf<AActor> DashClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack|Projectile")
-	TObjectPtr<UAnimMontage> AttackAnim;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Teleport|Dash")
-	TObjectPtr<UAnimMontage> TeleportMontage;
-
-	FTimerHandle TimerHandle_PrimaryAttack;
-	FTimerHandle TimerHandle_DashAbility;
-
-	float PrimaryAttackDelay;
-	
-	float DashAbilityDelay;
-	float DashAbilityExitDelay;
 
 	UPROPERTY(VisibleAnywhere, Category = "Parameter Names")
 	FName HitFleshColorParamName;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Parameter Names")
 	FName TimeToHitParamName;
-	
-	UPROPERTY(VisibleAnywhere, Category = "Sockets")
-	FName HandSocket;
-
-	UPROPERTY(VisibleAnywhere, Category = "Sockets")
-	FName SpineSocket;
 public:
 	ASCharacter();
 
@@ -89,6 +59,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Input")
 	TObjectPtr<UInputAction> Input_Dash;
 
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> Input_Sprint;
+
 	
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<USpringArmComponent> SpringArmComp;
@@ -102,37 +75,48 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USAttributeComponent> AttributeComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<USActionComponent> ActionComp;
+	
 	virtual void PostInitializeComponents() override;
 
-	//Movement
+	/*
+	 *	Movement
+	 */
 	void Move(const FInputActionValue& InputValue);
 	
 	void LookMouse(const FInputActionValue& InputValue);
+
+	void SprintStart();
+	void SprintStop();
 
 	//This was for the ExplosiveBarrel. Might fix later
 	//UFUNCTION()
 	//virtual void TakeDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser ) override;
 
-	void PrimaryAttack();
-	void PrimaryAttack_TimeElapsed();
+	/*
+	 *	Attacks
+	 */
 	
-	void CalculateSpawnParams(FVector SpawnLocation, FTransform* SpawnTransform, FActorSpawnParameters* SpawnTM, float LineTraceLength, bool bIsStraight);
-	FVector PerformLineTrace(FTransform Start, float LineTraceLength, bool bIsStraight); //bIsStraight determines if the LineTrace should keep the Z location of the Start vector.
+	void PrimaryAttack();
 
 	void PrimaryInteract();
 
 	void BlackHoleAttack();
 
-	void DashAbility(); //Gets called when the dash ability is used
-	void DashAbility_TimeElapsed();
-	void DashAbility_Exit();
-
+	void DashAbility(); //Is called when the dash ability is used
+	
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
 	
 public:	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	/*
+	 *	SCharInfoInterface Functions
+	 */
+
+	virtual FTransform GetCameraTransform() const override;
 	
 	/*
 	 *	Console Commands
@@ -140,8 +124,4 @@ public:
 	
 	UFUNCTION(Exec)
 	void HealSelf(float Amount = 100.f);
-	
-private:
-	
-	bool bIsPrimaryAttacking = false;
 };
