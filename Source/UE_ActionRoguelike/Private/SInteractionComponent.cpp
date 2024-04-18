@@ -1,83 +1,144 @@
 #include "SInteractionComponent.h"
 
 #include "SGameplayInterface.h"
+#include "Blueprint/UserWidget.h"
 #include "Camera/CameraComponent.h"
+#include "SWorldUserWidget.h"
 
 static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(TEXT("ar.InteractionDebugDraw"),
 	false, TEXT("Enable Debug Lines for Interact Component"), ECVF_Cheat);
 
 USInteractionComponent::USInteractionComponent()
 {
+	PrimaryComponentTick.bCanEverTick = true;
+
+	TraceRadius = 45.0f;
+	TraceDistance = 350.f;
+	CollisionChannels.Add(ECC_WorldDynamic);
+	CollisionChannels.Add(ECC_GameTraceChannel1); //The powerup channel
+}
+
+void USInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	FindBestInteractable();
+}
+
+void USInteractionComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	for (TEnumAsByte<ECollisionChannel> CollisionChannel : CollisionChannels)
+	{
+		ObjectQueryParams.AddObjectTypesToQuery(CollisionChannel);
+	}
 }
 
 void USInteractionComponent::PrimaryInteract()
 {
-	FCollisionObjectQueryParams ObjectQueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_GameTraceChannel1); //The powerup channel
+	/* Possibly the worst way I could've done this. HealthPotion inherits GameplayInterface and lever doesn't since it's in blueprints.
+	If it is the lever, cast will fail, so doesn't have to check if can interact. If it's a HealthPotion, goes inside if statement
+	and should check if CanInteract.
+	TODO: Implement a single way to handle GameplayInterface. (Find way to inherit GameplayInterface to blueprint, or do it without GameplayInterface).
+	*/
 
+	if (FocusedActor)
+	{
+		ISGameplayInterface* GameplayInterface = Cast<ISGameplayInterface>(FocusedActor);
+		if (GameplayInterface && !GameplayInterface->GetCanInteract())
+		{
+			return;
+		}
+		
+		APawn* MyPawn = Cast<APawn>(GetOwner());
+        	
+		ISGameplayInterface::Execute_Interact(FocusedActor, MyPawn);
+	}
+}
+
+void USInteractionComponent::FindBestInteractable()
+{
 	AActor* MyOwner = GetOwner();
 
 	UCameraComponent* PlayerCamera = MyOwner->FindComponentByClass<UCameraComponent>();
 
-	if (ensureAlways(PlayerCamera))
+	if (!ensureAlways(PlayerCamera))
 	{
-		FVector Start = PlayerCamera->GetComponentLocation();
-		FRotator CameraRotation = PlayerCamera->GetComponentRotation();
-		FVector End = Start + (CameraRotation.Vector() * 350.f);
+		return;
+	}
 	
-		TArray<FHitResult> Hits;
+	FVector Start = PlayerCamera->GetComponentLocation();
+	FRotator CameraRotation = PlayerCamera->GetComponentRotation();
+	FVector End = Start + (CameraRotation.Vector() * TraceDistance);
 
-		float Radius = 45.f;
-		FCollisionShape Shape;
-		Shape.SetSphere(Radius);
+	TArray<FHitResult> Hits;
 	
-		bool bBlockingHit = GetWorld()->SweepMultiByObjectType(Hits, Start, End, FQuat::Identity, ObjectQueryParams, Shape);
-	
-		FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
+	FCollisionShape Shape;
+	Shape.SetSphere(TraceRadius);
 
-		if (CVarDebugDrawInteraction.GetValueOnGameThread())
+	bool bBlockingHit = GetWorld()->SweepMultiByObjectType(Hits, Start, End, FQuat::Identity, ObjectQueryParams, Shape);
+
+	FColor LineColor = bBlockingHit ? FColor::Green : FColor::Red;
+
+	if (CVarDebugDrawInteraction.GetValueOnGameThread())
+	{
+		DrawDebugLine(GetWorld(), Start, End, LineColor, false, 2.0f, 0, 2.0f);
+	}
+
+	// Clear reference before trying to fill
+	FocusedActor = nullptr;
+	
+	for (FHitResult Hit : Hits)
+	{
+		AActor* HitActor = Hit.GetActor();
+		if (HitActor)
 		{
-			DrawDebugLine(GetWorld(), Start, End, LineColor, false, 2.0f, 0, 2.0f);
-		}
-		
-		for (FHitResult Hit : Hits)
-		{
-			AActor* HitActor = Hit.GetActor();
-			if (HitActor)
+			if (CVarDebugDrawInteraction.GetValueOnGameThread())
 			{
-				if (CVarDebugDrawInteraction.GetValueOnGameThread())
-				{
-					DrawDebugSphere(GetWorld(), Hit.ImpactPoint, Radius, 32, LineColor, false, 2.0f);
-				}
-					
-				ISGameplayInterface* GameplayInterface = Cast<ISGameplayInterface>(HitActor);
-				if (HitActor->Implements<USGameplayInterface>())
-				{
-					/* Possibly the worst way I could've done this. HealthPotion inherits GameplayInterface and lever doesn't since it's in blueprints.
-					If it is the lever, cast will fail, so doesn't have to check if can interact. If it's a HealthPotion, goes inside if statement
-					and should check if CanInteract.
-					TODO: Implement a single way to handle GameplayInterface. (Find way to inherit GameplayInterface to blueprint, or do it without GameplayInterface).
-					*/
-					if (GameplayInterface)
-					{
-						if (GameplayInterface->GetCanInteract())
-						{
-							APawn* MyPawn = Cast<APawn>(MyOwner);
-        		
-							ISGameplayInterface::Execute_Interact(HitActor, MyPawn);
-							break;
-						}
-					}
-					else
-					{
-						APawn* MyPawn = Cast<APawn>(MyOwner);
-        		
-						ISGameplayInterface::Execute_Interact(HitActor, MyPawn);
-						break;
-					}
-				}
+				DrawDebugSphere(GetWorld(), Hit.ImpactPoint, TraceRadius, 32, LineColor, false, 2.0f);
+			}
+			
+			if (HitActor->Implements<USGameplayInterface>())
+			{
+				FocusedActor = HitActor;
+				break;
 			}
 		}
+	}
+
+	// If the Focused Object exists, and if it is interactable.
+	if (FocusedActor)
+	{
+		// If the GameplayInterface is inherited by object and it can't interact, return.
+		ISGameplayInterface* GameplayInterface = Cast<ISGameplayInterface>(FocusedActor);
+		if (GameplayInterface && !GameplayInterface->GetCanInteract())
+		{
+			if (DefaultWidgetInstance)
+			{
+				DefaultWidgetInstance->RemoveFromParent();
+				return;
+			}
+		}
+		
+		if (DefaultWidgetInstance == nullptr && ensure(DefaultWidgetClass))
+		{
+			DefaultWidgetInstance = CreateWidget<USWorldUserWidget>(GetWorld(), DefaultWidgetClass);
+		}
+
+		if (DefaultWidgetInstance)
+		{
+			DefaultWidgetInstance->AttachedActor = FocusedActor;
+
+			if (!DefaultWidgetInstance->IsInViewport())
+			{
+				DefaultWidgetInstance->AddToViewport();
+			}
+		}
+	}
+	else if (DefaultWidgetInstance)
+	{
+		DefaultWidgetInstance->RemoveFromParent();
 	}
 }

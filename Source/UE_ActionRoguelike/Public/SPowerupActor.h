@@ -24,7 +24,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Attributes")
 	float RespawnTime;
 
-	//Spawn rate in the case that it gets spawned on game start.
+	//Spawn rate in the case that it is spawned on game start.
 	UPROPERTY(EditDefaultsOnly, Category = "Credits", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
 	float PowerupSpawnRate;
 	

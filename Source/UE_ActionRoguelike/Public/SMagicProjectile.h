@@ -7,6 +7,8 @@
 #include "SMagicProjectile.generated.h"
 
 
+class USActionEffect;
+
 UCLASS()
 class UE_ACTIONROGUELIKE_API ASMagicProjectile : public ABaseAttack
 {
@@ -23,6 +25,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Damage")
 	FGameplayTag ParryTag;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Damage")
+	TSubclassOf<USActionEffect> BurningActionClass;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UAudioComponent> AudioComp;

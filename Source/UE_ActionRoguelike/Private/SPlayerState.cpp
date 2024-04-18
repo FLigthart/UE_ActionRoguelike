@@ -5,11 +5,6 @@ ASPlayerState::ASPlayerState()
 	CreditAmount = 0;
 }
 
-int32 ASPlayerState::GetCreditAmount() const
-{
-	return CreditAmount;
-}
-
 bool ASPlayerState::AddCredits(int32 Delta)
 {
 	if (Delta < 0)
@@ -41,4 +36,9 @@ bool ASPlayerState::RemoveCredits(int32 Delta)
 	OnCreditsChanged.Broadcast(this, CreditAmount, -Delta);
 	
 	return true;
+}
+
+int32 ASPlayerState::GetCreditAmount() const
+{
+	return CreditAmount;
 }

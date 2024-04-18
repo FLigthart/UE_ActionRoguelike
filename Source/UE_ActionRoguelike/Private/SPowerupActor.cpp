@@ -1,6 +1,7 @@
 #include "SPowerupActor.h"
 
 #include "Components/SphereComponent.h"
+#include "PhysicsEngine/ShapeElem.h"
 
 ASPowerupActor::ASPowerupActor()
 {
@@ -31,7 +32,7 @@ void ASPowerupActor::Interact_Implementation(APawn* InstigatorPawn)
 void ASPowerupActor::Disable()
 {
 	MeshComp->SetVisibility(false, true);
-
+	
 	SetCanInteract(false);
 	
 	FTimerHandle TimerHandle;

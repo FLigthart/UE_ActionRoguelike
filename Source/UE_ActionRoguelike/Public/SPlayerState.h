@@ -28,6 +28,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Credits")
 	bool RemoveCredits(int32 Delta);
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable, Category = "Events")
 	FOnCreditsChanged OnCreditsChanged;
 };

@@ -15,6 +15,9 @@ class UE_ACTIONROGUELIKE_API USAction : public UObject
 
 public:
 
+	UPROPERTY(EditDefaultsOnly, Category = "Action")
+	bool bAutoStart;
+	
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	bool IsRunning() const;
 	

@@ -1,12 +1,12 @@
 #include "SMagicProjectile.h"
 
 #include "SActionComponent.h"
-#include "SAttributeComponent.h"
 #include "SGameplayFunctionLibrary.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "SActionEffect.h"
 
 ASMagicProjectile::ASMagicProjectile()
 {
@@ -51,8 +51,14 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 			return;
 		}
 		
-		//Apply damage with impulse
-		USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult);
+		//Apply damage with impulse and burn.
+		if (USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, DamageAmount, SweepResult))
+		{
+			if (ActionComp)
+			{
+				ActionComp->AddAction(GetInstigator(), BurningActionClass);
+			}
+		}
 		
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactVFX, GetActorLocation(), GetActorRotation());
 	
