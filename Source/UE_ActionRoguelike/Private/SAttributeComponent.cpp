@@ -9,8 +9,11 @@ static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("ar.DamageMultiplie
 USAttributeComponent::USAttributeComponent()
 {
 	Health = 100.f;
-
 	HealthMax = 100.f;
+
+	Rage = 0.f;
+	RageMax = 100.f;
+	RagePercentage = 0.5f;
 }
 
 bool USAttributeComponent::IsAlive() const
@@ -47,6 +50,12 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	
 	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
 
+	// Apply Rage change if damage taken.
+	if (ActualDelta < 0.0f)
+	{
+		ApplyRageChange(InstigatorActor, FMath::RoundHalfFromZero(FMath::Abs(ActualDelta * RagePercentage)));
+	}
+
 	//Died
 	if (ActualDelta < 0.0f && Health == 0.0f)
 	{
@@ -78,4 +87,34 @@ bool USAttributeComponent::IsActorAlive(AActor* Actor)
 	}
 
 	return false;
+}
+
+bool USAttributeComponent::ApplyRageChange(AActor* InstigatorActor, float Delta)
+{
+	if (Delta > 0.f && IsMaxRage())
+	{
+		return false;
+	}
+
+	float OldRage = Rage;
+	
+	Rage += Delta;
+	
+	Rage = FMath::Clamp(Rage, 0.0f, RageMax);
+
+	float ActualDelta = Rage - OldRage;
+
+	OnRageChanged.Broadcast(InstigatorActor, this, Rage, ActualDelta);
+
+	return FMath::IsNearlyZero(ActualDelta);
+}
+
+bool USAttributeComponent::RequestRageAction(AActor* InstigatorActor, float Cost)
+{
+	if (Rage < Cost)
+	{
+		return false;
+	}
+
+	return true;
 }

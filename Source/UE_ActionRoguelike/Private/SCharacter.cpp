@@ -33,6 +33,8 @@ ASCharacter::ASCharacter()
 
 	TimeToHitParamName = "TimeToHit";
 	HitFleshColorParamName = "HitFleshColor";
+
+	BlackHoleRageCost = 5.f;
 }
 
 void ASCharacter::PostInitializeComponents()
@@ -40,6 +42,7 @@ void ASCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	AttributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
+	AttributeComp->OnRageChanged.AddDynamic(this, &ASCharacter::OnRageChanged);
 	//OnTakeAnyDamage.AddDynamic(this, &ASCharacter::TakeDamage); //For the explosive barrel
 }
 
@@ -61,6 +64,11 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 		DisableInput(Cast<APlayerController>(GetController()));
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+}
+
+void ASCharacter::OnRageChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewRage, float Delta)
+{
+	//TODO: Make a popup that tells the player they have enough rage to perform an action to for example use an ability.
 }
 
 void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -110,6 +118,11 @@ FTransform ASCharacter::GetCameraTransform() const
 void ASCharacter::HealSelf(float Amount /* = 100 */)
 {
 	AttributeComp->ApplyHealthChange(this, Amount);
+}
+
+void ASCharacter::GrantRage(float Amount /* = 100 */)
+{
+	AttributeComp->ApplyRageChange(this, Amount);
 }
 
 /*
@@ -178,7 +191,11 @@ void ASCharacter::PrimaryInteract()
 
 void ASCharacter::BlackHoleAttack() //Implementation of BlackHole is in Blueprints
 {
-	ActionComp->StartActionByName(this, "BlackHoleAttack");
+	//If the user has the required amount of rage and is able to do the BlackHoleAttack (can be blocked by other actions such as sprinting), subtract the rage.
+	if (AttributeComp->RequestRageAction(this, BlackHoleRageCost) && ActionComp->StartActionByName(this, "BlackHoleAttack"))
+	{
+		AttributeComp->ApplyRageChange(this, -BlackHoleRageCost);
+	}
 }
 
 //This is only for calculating the path, animations on character and spawning the DashProjectile. The usage is implemented in SDashProjectile

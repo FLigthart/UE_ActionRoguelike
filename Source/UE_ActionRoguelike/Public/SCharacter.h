@@ -108,6 +108,16 @@ protected:
 	
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
+
+	UFUNCTION()
+	void OnRageChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewRage, float Delta);
+
+	/*
+	 *	Action Costs
+	 */
+
+	UPROPERTY(EditDefaultsOnly, Category = "Actions")
+	float BlackHoleRageCost;
 	
 public:	
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -124,4 +134,7 @@ public:
 	
 	UFUNCTION(Exec)
 	void HealSelf(float Amount = 100.f);
+
+	UFUNCTION(Exec)
+	void GrantRage(float Amount = 100.f);
 };
