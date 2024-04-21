@@ -4,7 +4,7 @@
 #include "GameFramework/RotatingMovementComponent.h"
 #include "SItemRotatingMovementComp.generated.h"
 
-UCLASS()
+UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
 class UE_ACTIONROGUELIKE_API USItemRotatingMovementComp : public URotatingMovementComponent
 {
 	GENERATED_BODY()

@@ -21,16 +21,22 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USphereComponent> SphereComp;
 
-	UPROPERTY(EditAnywhere, Category = "Attributes")
+	UPROPERTY(EditAnywhere, Category = "Powerup")
 	float RespawnTime;
 
 	//Spawn rate in the case that it is spawned on game start.
-	UPROPERTY(EditDefaultsOnly, Category = "Credits", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	UPROPERTY(EditDefaultsOnly, Category = "Powerup", meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
 	float PowerupSpawnRate;
-	
+
+	UPROPERTY(EditAnywhere, Category = "Powerup")
+	float SpawnHeightOffset;
+
+	UFUNCTION(BlueprintCallable)
 	void Disable();
-	void Reactivate();
 	
+	void Reactivate();
+
+	virtual void BeginPlay() override;
 public:	
 	ASPowerupActor();
 

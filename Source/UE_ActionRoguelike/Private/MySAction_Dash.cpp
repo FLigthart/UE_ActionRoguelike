@@ -1,5 +1,6 @@
 #include "MySAction_Dash.h"
 
+#include "SActionComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -10,8 +11,26 @@ UMySAction_Dash::UMySAction_Dash()
 	DashAbilityExitDelay = 0.2f;
 }
 
+bool UMySAction_Dash::CanStart_Implementation(AActor* InstigatorActor)
+{
+	if (IsRunning() || GetOwningComponent()->ActiveGameplayTags.HasAny(BlockedTags))
+	{
+		return false;
+	}
+	
+	if (GetOwningComponent()->ActiveGameplayTags.HasTag(DashTag))
+	{
+		return true;
+	}
+	
+	return false;
+}
+
 void UMySAction_Dash::StartAction_Implementation(AActor* InstigatorActor)
 {
+	// Remove tag that grants dash, since it is used.
+	GetOwningComponent()->ActiveGameplayTags.RemoveTag(DashTag);
+	
 	Super::StartAction_Implementation(InstigatorActor);
 
 	UGameplayStatics::SpawnEmitterAttached(CastEffect, Instigator->GetMesh(), SpawnSocket, FVector::ZeroVector,

@@ -11,13 +11,8 @@ ASCoin::ASCoin()
 	CreditsAmount = 100;
 
 	PowerupSpawnRate = 0.025f;
-}
 
-void ASCoin::BeginPlay()
-{
-	Super::BeginPlay();
-
-	SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 40.f));
+	SpawnHeightOffset = 40.f;
 }
 
 void ASCoin::Interact_Implementation(APawn* InstigatorPawn)

@@ -17,6 +17,15 @@ ASPowerupActor::ASPowerupActor()
 	RespawnTime = 10.f;
 
 	PowerupSpawnRate = 0.025f;
+
+	SpawnHeightOffset = 0.0f;
+}
+
+void ASPowerupActor::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + SpawnHeightOffset));
 }
 
 float ASPowerupActor::GetPowerupSpawnRate()
