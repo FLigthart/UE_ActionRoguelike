@@ -4,12 +4,12 @@
 #include "BrainComponent.h"
 #include "SActionComponent.h"
 #include "SAttributeComponent.h"
-#include "SWorldUserWidget.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Perception/PawnSensingComponent.h"
+#include "SWorldUserWidget.h"
 
 ASAICharacter::ASAICharacter()
 {
@@ -26,6 +26,8 @@ ASAICharacter::ASAICharacter()
 	
 	TimeToHitParamName = "TimeToHit";
 	HitFleshColorParamName = "HitFleshColor";
+
+	TargetActorKey = "TargetActor";
 }
 
 void ASAICharacter::PostInitializeComponents()
@@ -48,11 +50,32 @@ void ASAICharacter::SetTargetActor(AActor* NewTarget)
 
 void ASAICharacter::OnPawnSeen(APawn* Pawn)
 {
-	SetTargetActor(Pawn);
+	if (GetTargetActor() != Pawn) //Check if the player spotted isn't the same player as the one currently targeted.
+	{
+		//Alert '!' widget pops up above head of minion.
+		USWorldUserWidget* AlertWidget = CreateWidget<USWorldUserWidget>(GetWorld(), PlayerSpottedWidget);
+		AlertWidget->AttachedActor = this;
+
+		//Index of 10 places it on top of other widgets.
+		AlertWidget->AddToViewport(10);
+
+		SetTargetActor(Pawn);
+	}
+}
+
+AActor* ASAICharacter::GetTargetActor() const
+{
+	AAIController* AIC = Cast<AAIController>(GetController());
+	if (AIC)
+	{
+		return Cast<AActor>(AIC->GetBlackboardComponent()->GetValueAsObject(TargetActorKey));
+	}
+
+	return nullptr;
 }
 
 void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth,
-	float Delta)
+                                    float Delta)
 {
 	GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 	

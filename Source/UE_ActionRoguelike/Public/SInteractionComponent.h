@@ -22,6 +22,8 @@ public:
 
 protected:
 
+	void ServerInteract();
+	
 	void BeginPlay() override;
 	
 	void FindBestInteractable();

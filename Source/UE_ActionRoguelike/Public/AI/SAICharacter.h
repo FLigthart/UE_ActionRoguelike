@@ -4,8 +4,8 @@
 #include "GameFramework/Character.h"
 #include "SAICharacter.generated.h"
 
-class USActionComponent;
 class USWorldUserWidget;
+class USActionComponent;
 class USAttributeComponent;
 class UPawnSensingComponent;
 
@@ -23,6 +23,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> HealthBarWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UUserWidget> PlayerSpottedWidget;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UPawnSensingComponent> PawnSensingComp;
@@ -39,12 +42,19 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Parameter Names")
 	FName TimeToHitParamName;
 
+	// Key for AI Blackboard is 'TargetActor'
+	UPROPERTY(VisibleAnywhere, Category = "Effects")
+	FName TargetActorKey;
+
 	virtual void PostInitializeComponents() override;
 
 	void SetTargetActor(AActor* NewTarget);
 	
 	UFUNCTION()
 	void OnPawnSeen(APawn* Pawn);
+
+	UFUNCTION(BlueprintCallable)
+	AActor* GetTargetActor() const;
 
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
