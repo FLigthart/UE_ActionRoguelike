@@ -1,9 +1,10 @@
 #include "SAttributeComponent.h"
 
 #include "SGameModeBase.h"
+#include "Net/UnrealNetwork.h"
 
 static TAutoConsoleVariable<float> CVarDamageMultiplier(TEXT("ar.DamageMultiplier"), 1.0f,
-	TEXT("Global Damage Modifier for Attribute Component."), ECVF_Cheat);
+                                                        TEXT("Global Damage Modifier for Attribute Component."), ECVF_Cheat);
 
 
 USAttributeComponent::USAttributeComponent()
@@ -14,11 +15,23 @@ USAttributeComponent::USAttributeComponent()
 	Rage = 0.f;
 	RageMax = 100.f;
 	RagePercentage = 0.5f;
+
+	SetIsReplicatedByDefault(true);
 }
 
 bool USAttributeComponent::IsAlive() const
 {
 	return Health > 0.0f;
+}
+
+void USAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
+{
+	OnHealthChanged.Broadcast(InstigatorActor, this, NewHealth, Delta);
+}
+
+void USAttributeComponent::MulticastRageChanged_Implementation(AActor* InstigatorActor, float NewRage, float Delta)
+{
+	OnRageChanged.Broadcast(InstigatorActor, this, NewRage, Delta);
 }
 
 bool USAttributeComponent::Kill(AActor* InstigatorActor)
@@ -42,13 +55,16 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	
 	float OldHealth = Health;
 	
-	Health += Delta;
-	
-	Health = FMath::Clamp(Health, 0.0f, HealthMax);
+	float NewHealth = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
 
-	float ActualDelta = Health - OldHealth;
+	float ActualDelta = NewHealth - OldHealth;
 	
-	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
+	Health = NewHealth;
+
+	if (ActualDelta != 0.0f)
+	{
+		MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
+	}
 
 	// Apply Rage change if damage taken.
 	if (ActualDelta < 0.0f)
@@ -98,14 +114,19 @@ bool USAttributeComponent::ApplyRageChange(AActor* InstigatorActor, float Delta)
 
 	float OldRage = Rage;
 	
-	Rage += Delta;
+	float NewRage = Rage + Delta;
 	
-	Rage = FMath::Clamp(Rage, 0.0f, RageMax);
+	NewRage = FMath::Clamp(NewRage, 0.0f, RageMax);
 
-	float ActualDelta = Rage - OldRage;
-
-	OnRageChanged.Broadcast(InstigatorActor, this, Rage, ActualDelta);
-
+	float ActualDelta = NewRage - OldRage;
+	
+	Rage = NewRage;
+	
+	if (Delta != 0.0f)
+	{
+		OnRageChanged.Broadcast(InstigatorActor, this, Rage, ActualDelta);
+	}
+	
 	return FMath::IsNearlyZero(ActualDelta);
 }
 
@@ -117,4 +138,15 @@ bool USAttributeComponent::RequestRageAction(AActor* InstigatorActor, float Cost
 	}
 
 	return true;
+}
+
+void USAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(USAttributeComponent, Health);
+	DOREPLIFETIME(USAttributeComponent, HealthMax);
+	
+	DOREPLIFETIME(USAttributeComponent, Rage);
+	DOREPLIFETIME(USAttributeComponent, RageMax);
 }

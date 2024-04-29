@@ -52,14 +52,22 @@ void ASAICharacter::OnPawnSeen(APawn* Pawn)
 {
 	if (GetTargetActor() != Pawn) //Check if the player spotted isn't the same player as the one currently targeted.
 	{
-		//Alert '!' widget pops up above head of minion.
-		USWorldUserWidget* AlertWidget = CreateWidget<USWorldUserWidget>(GetWorld(), PlayerSpottedWidget);
+		SetTargetActor(Pawn);
+
+		MulticastPawnSeen();
+	}
+}
+
+void ASAICharacter::MulticastPawnSeen_Implementation()
+{
+	//Alert '!' widget pops up above head of minion.
+	USWorldUserWidget* AlertWidget = CreateWidget<USWorldUserWidget>(GetWorld(), PlayerSpottedWidget);
+	if (AlertWidget)
+	{
 		AlertWidget->AttachedActor = this;
 
 		//Index of 10 places it on top of other widgets.
 		AlertWidget->AddToViewport(10);
-
-		SetTargetActor(Pawn);
 	}
 }
 
@@ -82,7 +90,7 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 	if (Delta <= 0.0f) 
 	{
 
-		if (!InstigatorActor->IsA(ASAICharacter::StaticClass())) //Do not target lock when another SAICharacter hits the SAICharacter
+		if (InstigatorActor && !InstigatorActor->IsA(ASAICharacter::StaticClass())) //Do not target lock when another SAICharacter hits the SAICharacter
 		{
 			SetTargetActor(InstigatorActor);
 		}

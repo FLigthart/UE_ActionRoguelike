@@ -6,7 +6,6 @@
 #include "SPlayerState.h"
 #include "SPowerupActor.h"
 #include "AI/SAICharacter.h"
-#include "EntitySystem/MovieSceneEntitySystemRunner.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 
 
@@ -181,7 +180,7 @@ void ASGameModeBase::OnActorKilled(AActor* VictimActor, AActor* Killer)
 	if (KillerPawn && KillerPawn != VictimActor) //Victim can't be the killer
 	{
 		ASPlayerState* PS = KillerPawn->GetPlayerState<ASPlayerState>();
-		if (PS) //AI will be nullptr.
+		if (PS && PS != VictimActor) //AI will be nullptr.
 		{
 			PS->AddCredits(CreditsForKill);
 		}

@@ -20,6 +20,8 @@ ASExplosiveBarrel::ASExplosiveBarrel()
 	RadialForce->SetAutoActivate(false);
 
 	DamageAmount = -50.f;
+
+	bReplicates = true;
 }
 
 void ASExplosiveBarrel::PostInitializeComponents()
@@ -40,10 +42,19 @@ void ASExplosiveBarrel::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor,
 
 void ASExplosiveBarrel::Explode(AActor* DamageCauser)
 {
-	RadialForce->FireImpulse();
+	MulticastExplode();
 	
 	/*TArray<AActor*> IgnoredActors;
 	UGameplayStatics::ApplyRadialDamageWithFalloff(GetWorld(), DamageAmount, 5.f, GetActorLocation(),
 		RadialForce->Radius * 0.25f, RadialForce->Radius, 1.2f, UDamageType::StaticClass(),
 		IgnoredActors, DamageCauser);*/
+
+	SetLifeSpan(2.0f);
+}
+
+void ASExplosiveBarrel::MulticastExplode_Implementation()
+{
+	RadialForce->FireImpulse();
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
 }

@@ -1,6 +1,7 @@
 #include "SAction.h"
 
 #include "SActionComponent.h"
+#include "UE_ActionRoguelike/UE_ActionRoguelike.h"
 
 bool USAction::CanStart_Implementation(AActor* Instigator)
 {
@@ -14,8 +15,9 @@ bool USAction::CanStart_Implementation(AActor* Instigator)
 
 void USAction::StartAction_Implementation(AActor* Instigator)
 {
-	UE_LOG(LogTemp, Log, TEXT("Running: %s"), *GetNameSafe(this));
-
+	//UE_LOG(LogTemp, Log, TEXT("Running: %s"), *GetNameSafe(this));
+	LogOnScreen(this, FString::Printf(TEXT("Started: %s"), *ActionName.ToString()), FColor::Green);
+	
 	USActionComponent* Comp = GetOwningComponent();
 	Comp->ActiveGameplayTags.AppendTags(GrantsTags);
 
@@ -24,8 +26,9 @@ void USAction::StartAction_Implementation(AActor* Instigator)
 
 void USAction::StopAction_Implementation(AActor* Instigator)
 {
-	UE_LOG(LogTemp, Log, TEXT("Stopped: %s"), *GetNameSafe(this));
-
+	//UE_LOG(LogTemp, Log, TEXT("Stopped: %s"), *GetNameSafe(this));
+	LogOnScreen(this, FString::Printf(TEXT("Stopped: %s"), *ActionName.ToString()), FColor::Red);
+	
 	//If bIsRunning is false, but we still call StopAction, we did something wrong.
 	ensureAlways(bIsRunning);
 	

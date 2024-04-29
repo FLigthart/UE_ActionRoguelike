@@ -28,9 +28,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 	bool StopActionByName(AActor* InstigatorActor, FName ActionName);
+
+	USActionComponent();
+
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	
 protected:
 
+	UFUNCTION(Server, Reliable)
+	void ServerStartAction(AActor* InstigatorActor, FName ActionName);
+	
 	/* Default abilities at game start */
 	UPROPERTY(EditAnywhere, Category = "Actions")
 	TArray<TSubclassOf<USAction>> DefaultActions;

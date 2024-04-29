@@ -23,7 +23,12 @@ void USInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FindBestInteractable();
+	// Only if we are running the SInteractionComponent, run the interaction code.
+	APawn* Pawn = Cast<APawn>(GetOwner());
+	if (Pawn->IsLocallyControlled())
+	{
+		FindBestInteractable();
+	}
 }
 
 void USInteractionComponent::BeginPlay()
@@ -44,7 +49,12 @@ void USInteractionComponent::PrimaryInteract()
 	TODO: Implement a single way to handle GameplayInterface. (Find way to inherit GameplayInterface to blueprint, or do it without GameplayInterface).
 	*/
 
-	if (FocusedActor)
+	ServerInteract(FocusedActor);
+}
+
+void USInteractionComponent::ServerInteract_Implementation(AActor* InFocus)
+{
+	if (InFocus)
 	{
 		ISGameplayInterface* GameplayInterface = Cast<ISGameplayInterface>(FocusedActor);
 		if (GameplayInterface && !GameplayInterface->GetCanInteract())
@@ -54,7 +64,7 @@ void USInteractionComponent::PrimaryInteract()
 		
 		APawn* MyPawn = Cast<APawn>(GetOwner());
         	
-		ISGameplayInterface::Execute_Interact(FocusedActor, MyPawn);
+		ISGameplayInterface::Execute_Interact(InFocus, MyPawn);
 	}
 }
 

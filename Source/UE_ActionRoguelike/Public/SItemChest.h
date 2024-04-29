@@ -21,6 +21,7 @@ public:
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 	
 protected:
+	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UStaticMeshComponent> BaseMesh;
 	
@@ -33,6 +34,12 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UParticleSystemComponent> GoldEffect;
 
+	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly)
+	bool bLidOpened;
+
+	UFUNCTION()
+	void OnRep_LidOpened();
+	
 public:	
 	
 	ASItemChest();

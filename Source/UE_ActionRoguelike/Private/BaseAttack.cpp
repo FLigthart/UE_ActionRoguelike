@@ -21,6 +21,8 @@ ABaseAttack::ABaseAttack()
 	MovementComp->bInitialVelocityInLocalSpace = true;
 	
 	MovementComp->ProjectileGravityScale = 0.f;
+
+	bReplicates = true;
 }
 
 void ABaseAttack::PostInitializeComponents()

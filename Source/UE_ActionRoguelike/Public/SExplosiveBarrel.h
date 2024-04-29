@@ -29,6 +29,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void Explode(AActor* DamageCauser);
 
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastExplode();
+
 	virtual void PostInitializeComponents() override; 
 
 	float DamageAmount;

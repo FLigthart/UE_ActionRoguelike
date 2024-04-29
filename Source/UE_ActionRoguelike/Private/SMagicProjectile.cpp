@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "SActionEffect.h"
 
+
 ASMagicProjectile::ASMagicProjectile()
 {
 	AudioComp = CreateDefaultSubobject<UAudioComponent>("AudioComp");

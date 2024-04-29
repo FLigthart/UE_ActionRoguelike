@@ -15,8 +15,12 @@ public:
 	ASPlayerState();
 	
 protected:
-	
+
+	UPROPERTY(EditDefaultsOnly, ReplicatedUsing="OnRep_Credits", Category = "Credits")
 	int32 CreditAmount;
+
+	UFUNCTION()
+	void OnRep_Credits(int32 OldCredits);
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "Credits")

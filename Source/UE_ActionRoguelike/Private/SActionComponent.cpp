@@ -1,6 +1,13 @@
 #include "SActionComponent.h"
 
 #include "SAction.h"
+#include "UE_ActionRoguelike/UE_ActionRoguelike.h"
+
+
+USActionComponent::USActionComponent()
+{
+	SetIsReplicatedByDefault(true);
+}
 
 void USActionComponent::BeginPlay()
 {
@@ -9,6 +16,22 @@ void USActionComponent::BeginPlay()
 	for (TSubclassOf<USAction> ActionClass : DefaultActions)
 	{
 		AddAction(GetOwner(), ActionClass);
+	}
+}
+
+void USActionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	for (USAction* Action : Actions)
+	{
+		FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
+
+		FString ActionMsg = FString::Printf(TEXT("[%s] Action: %s : IsRunning: %s : Outer: %s"),
+		*GetNameSafe(GetOwner()), *Action->ActionName.ToString(), Action->IsRunning() ? TEXT("true") : TEXT("false"), *GetNameSafe(GetOuter()));
+
+		LogOnScreen(this, ActionMsg, TextColor, 0.0f);
 	}
 }
 
@@ -51,6 +74,11 @@ bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 			{
 				continue;
 			}
+
+			if (!GetOwner()->HasAuthority()) // Is Client
+			{
+				ServerStartAction(Instigator, ActionName);
+			}
 			
 			Action->StartAction(Instigator);
 			return true;
@@ -75,4 +103,9 @@ bool USActionComponent::StopActionByName(AActor* Instigator, FName ActionName)
 	}
 
 	return false;
+}
+
+void USActionComponent::ServerStartAction_Implementation(AActor* InstigatorActor, FName ActionName)
+{
+	StartActionByName(InstigatorActor, ActionName);
 }

@@ -1,6 +1,7 @@
 #include "SPowerupActor.h"
 
 #include "Components/SphereComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "PhysicsEngine/ShapeElem.h"
 
 ASPowerupActor::ASPowerupActor()
@@ -19,6 +20,10 @@ ASPowerupActor::ASPowerupActor()
 	PowerupSpawnRate = 0.025f;
 
 	SpawnHeightOffset = 0.0f;
+
+	bIsActive = true;
+	
+	bReplicates = true;
 }
 
 void ASPowerupActor::BeginPlay()
@@ -38,11 +43,18 @@ void ASPowerupActor::Interact_Implementation(APawn* InstigatorPawn)
 	//Setup logic in derived classes
 }
 
+void ASPowerupActor::OnRep_IsActive()
+{
+	SetActorEnableCollision(bIsActive);
+
+	RootComponent->SetVisibility(bIsActive, true);
+}
+
 void ASPowerupActor::Disable()
 {
-	MeshComp->SetVisibility(false, true);
+	bIsActive = false;
 	
-	SetCanInteract(false);
+	OnRep_IsActive();
 	
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ASPowerupActor::Reactivate, RespawnTime, false);
@@ -50,9 +62,16 @@ void ASPowerupActor::Disable()
 
 void ASPowerupActor::Reactivate()
 {
-	MeshComp->SetVisibility(true, true);
+	bIsActive = true;
+	
+	OnRep_IsActive();
+}
 
-	SetCanInteract(true);
+void ASPowerupActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASPowerupActor, bIsActive);
 }
 
 

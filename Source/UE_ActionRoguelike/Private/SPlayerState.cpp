@@ -1,8 +1,15 @@
 #include "SPlayerState.h"
 
+#include "Net/UnrealNetwork.h"
+
 ASPlayerState::ASPlayerState()
 {
 	CreditAmount = 0;
+}
+
+void ASPlayerState::OnRep_Credits(int32 OldCredits)
+{
+	OnCreditsChanged.Broadcast(this, CreditAmount,CreditAmount - OldCredits);
 }
 
 bool ASPlayerState::AddCredits(int32 Delta)
@@ -41,4 +48,11 @@ bool ASPlayerState::RemoveCredits(int32 Delta)
 int32 ASPlayerState::GetCreditAmount() const
 {
 	return CreditAmount;
+}
+
+void ASPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASPlayerState, CreditAmount);
 }

@@ -22,7 +22,8 @@ public:
 
 protected:
 
-	void ServerInteract();
+	UFUNCTION(Server, Reliable)
+	void ServerInteract(AActor* InFocus);
 	
 	void BeginPlay() override;
 	
