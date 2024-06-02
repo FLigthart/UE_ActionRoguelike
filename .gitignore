@@ -2,9 +2,9 @@
 .vs/
 
 # miscellaneous
-.idea/
-**/Plugins
-.vsconfig/
+idea*
+Plugins*
+vsconfig*
 
 # Compiled Object files
 *.slo
