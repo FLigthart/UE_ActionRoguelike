@@ -63,6 +63,8 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 	{
 		DisableInput(Cast<APlayerController>(GetController()));
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		SetLifeSpan(5.0f);
 	}
 }
 

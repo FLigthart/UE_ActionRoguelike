@@ -58,27 +58,30 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float Delt
 	float NewHealth = FMath::Clamp(Health + Delta, 0.0f, HealthMax);
 
 	float ActualDelta = NewHealth - OldHealth;
-	
-	Health = NewHealth;
 
-	if (ActualDelta != 0.0f)
+	if (GetOwner()->HasAuthority())
 	{
-		MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
-	}
+		Health = NewHealth;
 
-	// Apply Rage change if damage taken.
-	if (ActualDelta < 0.0f)
-	{
-		ApplyRageChange(InstigatorActor, FMath::RoundHalfFromZero(FMath::Abs(ActualDelta * RagePercentage)));
-	}
-
-	//Died
-	if (ActualDelta < 0.0f && Health == 0.0f)
-	{
-		ASGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ASGameModeBase>();
-		if (GameMode)
+		if (ActualDelta != 0.0f)
 		{
-			GameMode->OnActorKilled(GetOwner(), InstigatorActor);
+			MulticastHealthChanged(InstigatorActor, Health, ActualDelta);
+		}
+
+		// Apply Rage change if damage taken.
+		if (ActualDelta < 0.0f)
+		{
+			ApplyRageChange(InstigatorActor, FMath::RoundHalfFromZero(FMath::Abs(ActualDelta * RagePercentage)));
+		}
+
+		//Died
+		if (ActualDelta < 0.0f && Health == 0.0f)
+		{
+			ASGameModeBase* GameMode = GetWorld()->GetAuthGameMode<ASGameModeBase>();
+			if (GameMode)
+			{
+				GameMode->OnActorKilled(GetOwner(), InstigatorActor);
+			}
 		}
 	}
 	
