@@ -168,14 +168,6 @@ void ASCharacter::SprintStop()
 	ActionComp->StopActionByName(this, "Sprint");
 }
 
-//TODO: Implement a proper way to take damage if the course doesn't do that. See that event in PostIni and SExplosiveBarrel
-/*void ASCharacter::TakeDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser )
-{
-	UE_LOG(LogTemp, Log, TEXT("Receive damage event triggered. Damage amount: %f"), Damage);
-	float ActualDamage = Super::TakeDamage(Damage, UDamageType::StaticClass(), InstigatedBy, DamageCauser);
-	AttributeComp->ApplyHealthChange(ActualDamage);
-}*/
-
 void ASCharacter::PrimaryAttack()
 {
 	ActionComp->StartActionByName(this, "PrimaryAttack");
