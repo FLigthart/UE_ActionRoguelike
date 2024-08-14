@@ -19,6 +19,8 @@ public:
 	float TargetPitch;
 	
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
+
+	virtual void OnActorLoaded_Implementation() override;
 	
 protected:
 	
@@ -34,7 +36,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	TObjectPtr<UParticleSystemComponent> GoldEffect;
 
-	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly)
+	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly, SaveGame)
 	bool bLidOpened;
 
 	UFUNCTION()

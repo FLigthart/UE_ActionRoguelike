@@ -20,6 +20,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Interact(APawn* InstigatorPawn);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnActorLoaded();
 	
 	FORCEINLINE void SetCanInteract(bool Value) { bCanInteract = Value; };
 	FORCEINLINE bool GetCanInteract() { return bCanInteract; };

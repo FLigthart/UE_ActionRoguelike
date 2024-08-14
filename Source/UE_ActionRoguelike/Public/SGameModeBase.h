@@ -5,8 +5,10 @@
 #include "SGameModeBase.generated.h"
 
 class ASPowerupActor;
-struct FEnvQueryResult;
 class UEnvQuery;
+class USSaveGame;
+
+struct FEnvQueryResult;
 
 UCLASS()
 class UE_ACTIONROGUELIKE_API ASGameModeBase : public AGameModeBase
@@ -16,6 +18,10 @@ class UE_ACTIONROGUELIKE_API ASGameModeBase : public AGameModeBase
 public:
 	
 	ASGameModeBase();
+
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 	
 	virtual void StartPlay() override;
 
@@ -23,6 +29,26 @@ public:
 	void KillAll();
 
 	virtual void OnActorKilled(AActor* VictimActor, AActor* Killer);
+
+	
+	/*
+	 *	Save Game variables and functions
+	 */
+
+	FString SaveSlotName;
+	
+	UPROPERTY()
+	USSaveGame* CurrentSaveGame;
+	
+	UFUNCTION(BlueprintCallable, Category = "SaveGame")
+	void WriteSaveGame();
+
+	// Load the save file, this needs to happen before loading player state (credits)
+	void LoadSaveGame();
+
+	// Set Actor states, this needs to happen on StartGame() or later.
+	void LoadObjectsFromSave();
+	
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "AI")

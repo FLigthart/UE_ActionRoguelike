@@ -7,6 +7,10 @@
 #include "SPowerupActor.h"
 #include "AI/SAICharacter.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
+#include "GameFramework/GameStateBase.h"
+#include "Kismet/GameplayStatics.h"
+#include "SaveGame/SSaveGame.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("ar.SpawnBots"), true, TEXT("Enable spawning of bots via timer."), ECVF_Cheat);
@@ -22,12 +26,34 @@ ASGameModeBase::ASGameModeBase()
 	PlayerStateClass = ASPlayerState::StaticClass();
 
 	CreditsForKill = 20;
+
+	SaveSlotName = "SaveGame01";
+}
+
+void ASGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+
+	LoadSaveGame();
+}
+
+void ASGameModeBase::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+
+	ASPlayerState* PS = NewPlayer->GetPlayerState<ASPlayerState>();
+	if (PS)
+	{
+		PS->LoadPlayerState(CurrentSaveGame);
+	}
 }
 
 void ASGameModeBase::StartPlay()
 {
 	Super::StartPlay();
 
+	LoadObjectsFromSave();
+	
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ASGameModeBase::SpawnBotTimerElapsed, SpawnTimerInterval, true);
 	SpawnPowerups();
 }
@@ -202,4 +228,121 @@ void ASGameModeBase::KillAll()
 			AttributeComp->Kill(this); // TODO: Pass in player(?) for kill credit
 		}
 	}
+}
+
+/*
+ *	Save Game Functions
+ */
+
+void ASGameModeBase::WriteSaveGame()
+{
+	for (int32 i = 0; i < GameState->PlayerArray.Num(); i++)
+	{
+		ASPlayerState* PS = Cast<ASPlayerState>(GameState->PlayerArray[i]);
+		if (PS)
+		{
+			PS->SavePlayerState(CurrentSaveGame);
+			break;	//Singe Player only
+		}
+	}
+
+	CurrentSaveGame->SavedActors.Empty();
+	
+	for (FActorIterator It(GetWorld()); It; ++It)
+	{
+		AActor* Actor = *It;
+
+		// Skip non-gameplay actors
+		if (!Actor->Implements<USGameplayInterface>())
+		{
+			continue;
+		}
+
+		FActorSaveData ActorData;
+		ActorData.ActorName = Actor->GetName();
+		ActorData.Transform = Actor->GetActorTransform();
+
+		/*
+		 *	Save variables in classes with UPROPERTY SaveGame
+		 */
+		
+		// Pass the array to fill with data as bytes
+		FMemoryWriter MemWriter(ActorData.ByteData);
+		
+		FObjectAndNameAsStringProxyArchive Ar(MemWriter, true);
+		// Only find variables with UPROPERTY SaveGame.
+		Ar.ArIsSaveGame = true;
+		
+		Actor->Serialize(Ar);
+
+		CurrentSaveGame->SavedActors.Add(ActorData);
+	}
+	
+	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SaveSlotName, 0);
+}
+
+/*
+ *	It's crucial that both LoadSaveGame() and LoadObjectsFromSave() are called. LoadSaveGame() needs to happen in Init() and LoadObjectsFromSave in StartPlay().
+ */
+void ASGameModeBase::LoadSaveGame()
+{
+	if (UGameplayStatics::DoesSaveGameExist(SaveSlotName, 0))
+	{
+		CurrentSaveGame = Cast<USSaveGame>(UGameplayStatics::LoadGameFromSlot(SaveSlotName, 0));
+
+		UE_LOG(LogTemp, Log, TEXT("Loaded SaveGame Data File."));
+	}
+	else
+	{
+		CurrentSaveGame = Cast<USSaveGame>(UGameplayStatics::CreateSaveGameObject(USSaveGame::StaticClass()));
+		UE_LOG(LogTemp, Log, TEXT("Created new SaveGame Data."));
+	}
+}
+
+void ASGameModeBase::LoadObjectsFromSave()
+{
+	if (CurrentSaveGame == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to load SaveGame Data."));
+		return;
+	}
+
+	for (FActorIterator It(GetWorld()); It; ++It)
+	{
+		AActor* Actor = *It;
+			
+		// Skip non-gameplay actors
+		if (!Actor->Implements<USGameplayInterface>())
+		{
+			continue;
+		}
+			
+		for (FActorSaveData ActorData : CurrentSaveGame->SavedActors)
+		{	
+			if (ActorData.ActorName == Actor->GetName())
+			{
+				Actor->SetActorTransform(ActorData.Transform);
+
+
+				/*
+				 *	Load variables in classes with UPROPERTY SaveGame
+				 */
+					
+				FMemoryReader MemReader(ActorData.ByteData);
+
+				FObjectAndNameAsStringProxyArchive Ar(MemReader, true);
+				// Only find variables with UPROPERTY SaveGame.
+				Ar.ArIsSaveGame = true;
+		
+				Actor->Serialize(Ar);
+
+				// Trigger load function on Actors with SGameplayInterface.
+				ISGameplayInterface::Execute_OnActorLoaded(Actor);
+					
+				break;
+			}
+		}
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("Loaded SaveGame Data Objects into world."));
 }
