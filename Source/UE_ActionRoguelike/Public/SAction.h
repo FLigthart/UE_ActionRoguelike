@@ -21,6 +21,11 @@ public:
 
 	UPROPERTY()
 	AActor* Instigator;
+
+	FActionRepData()
+	{
+		bIsRunning = false;
+	}
 };
 
 UCLASS(Blueprintable)
