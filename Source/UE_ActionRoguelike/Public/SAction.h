@@ -20,7 +20,7 @@ public:
 	bool bIsRunning;
 
 	UPROPERTY()
-	AActor* Instigator;
+	TObjectPtr<AActor> Instigator;
 
 	FActionRepData()
 	{
@@ -65,8 +65,11 @@ public:
 
 protected:
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	TObjectPtr<UTexture2D> Icon;
+	
 	UPROPERTY(Replicated)
-	USActionComponent* ActionComp;
+	TObjectPtr<USActionComponent> ActionComp;
 	
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	USActionComponent* GetOwningComponent() const;
