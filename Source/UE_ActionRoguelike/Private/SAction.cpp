@@ -30,6 +30,11 @@ void USAction::StartAction_Implementation(AActor* Instigator)
 	RepData.bIsRunning = true;
 	RepData.Instigator = Instigator;
 
+	if (GetOwningComponent()->GetOwnerRole() == ROLE_Authority)	// TimeStarted should only be set on server for it to be in sync between clients.
+	{
+		TimeStarted = GetWorld()->TimeSeconds;
+	}
+
 	GetOwningComponent()->OnActionStarted.Broadcast(GetOwningComponent(), this);
 }
 
@@ -70,6 +75,7 @@ void USAction::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLi
 
 	DOREPLIFETIME(USAction, RepData);
 	DOREPLIFETIME(USAction, ActionComp);
+	DOREPLIFETIME(USAction, TimeStarted);
 }
 
 UWorld* USAction::GetWorld() const

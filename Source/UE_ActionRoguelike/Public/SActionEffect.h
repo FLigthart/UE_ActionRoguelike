@@ -13,9 +13,13 @@ public:
 	
 	USActionEffect();
 	
+	UFUNCTION(BlueprintCallable, Category = "Action")
+    float GetTimeRemaining() const;
+	
 	void StartAction_Implementation(AActor* Instigator) override;
 	
 	void StopAction_Implementation(AActor* Instigator) override;
+
 protected:
 
 	/* Amount of time the effect lasts */

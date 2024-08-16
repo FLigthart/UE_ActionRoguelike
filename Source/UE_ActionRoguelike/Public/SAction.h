@@ -85,6 +85,9 @@ protected:
 	UPROPERTY(ReplicatedUsing="OnRep_RepData")
 	FActionRepData RepData;
 
+	UPROPERTY(Replicated)
+	float TimeStarted;	//The in-game time at which the Action was granted to the SActionComponent.
+
 	UFUNCTION()
 	void OnRep_RepData();
 };
