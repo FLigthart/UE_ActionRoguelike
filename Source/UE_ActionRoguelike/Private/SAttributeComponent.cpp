@@ -122,12 +122,15 @@ bool USAttributeComponent::ApplyRageChange(AActor* InstigatorActor, float Delta)
 	NewRage = FMath::Clamp(NewRage, 0.0f, RageMax);
 
 	float ActualDelta = NewRage - OldRage;
-	
-	Rage = NewRage;
-	
-	if (Delta != 0.0f)
+
+	if (GetOwner()->HasAuthority())	//Rage can only be changed on server
 	{
-		OnRageChanged.Broadcast(InstigatorActor, this, Rage, ActualDelta);
+		Rage = NewRage;
+		
+		if (Delta != 0.0f)
+		{
+			MulticastRageChanged(InstigatorActor, Rage, Delta);
+		}
 	}
 	
 	return FMath::IsNearlyZero(ActualDelta);
