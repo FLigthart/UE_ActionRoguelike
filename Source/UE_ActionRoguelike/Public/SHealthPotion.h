@@ -17,6 +17,8 @@ public:
 
 	virtual void BeginPlay() override;
 
+	virtual FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Credits")

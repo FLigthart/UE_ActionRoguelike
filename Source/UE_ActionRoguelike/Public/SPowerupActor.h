@@ -43,8 +43,12 @@ protected:
 	void Reactivate();
 
 	virtual void BeginPlay() override;
-public:	
+	
+public:
+	
 	ASPowerupActor();
 
 	float GetPowerupSpawnRate();
+
+	virtual FText GetInteractText_Implementation(APawn* InstigatorPawn);
 };

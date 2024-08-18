@@ -25,3 +25,8 @@ void ASCoin::Interact_Implementation(APawn* InstigatorPawn)
 		Disable();
 	}
 }
+
+FText ASCoin::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	return FText::Format(NSLOCTEXT("InteractableActors","Coin_DefaultInteractMessage", "Grants {0} Credits."), CreditsAmount);
+}

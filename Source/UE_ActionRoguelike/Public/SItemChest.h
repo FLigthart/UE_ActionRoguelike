@@ -45,4 +45,6 @@ protected:
 public:	
 	
 	ASItemChest();
+
+	FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
 };

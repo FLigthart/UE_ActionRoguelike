@@ -12,9 +12,13 @@ class UE_ACTIONROGUELIKE_API ASCoin : public ASPowerupActor
 	GENERATED_BODY()
 
 public:
+	
 	ASCoin();
+
+	virtual FText GetInteractText_Implementation(APawn* InstigatorPawn) override;
 	
 protected:
+	
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")

@@ -1,5 +1,7 @@
 #include "SItemChest.h"
 
+#include "SActionComponent.h"
+#include "SCharacter.h"
 #include "Net/UnrealNetwork.h"
 #include "Particles/ParticleSystemComponent.h"
 
@@ -26,7 +28,6 @@ ASItemChest::ASItemChest()
 	bReplicates = true;
 }
 
-
 void ASItemChest::Interact_Implementation(APawn* InstigatorPawn)
 {
 	bLidOpened = !bLidOpened;
@@ -49,4 +50,10 @@ void ASItemChest::OnRep_LidOpened()
 {
 	float CurrPitch = bLidOpened ? TargetPitch : 0.0f;
 	LidMesh->SetRelativeRotation(FRotator(CurrPitch, 0, 0));
+}
+
+FText ASItemChest::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	// TODO: If GameplayTags to open chests are reimplemented, add text to display which tag is needed here.
+	return FText::GetEmpty();
 }
