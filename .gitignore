@@ -4,6 +4,7 @@
 # miscellaneous
 /.idea
 /Plugins
+/Builds
 
 # Compiled Object files
 *.slo

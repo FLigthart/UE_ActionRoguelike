@@ -66,7 +66,7 @@ public:
 protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
-	TObjectPtr<UTexture2D> Icon;
+	TSoftObjectPtr<UTexture2D> Icon;
 	
 	UPROPERTY(Replicated)
 	TObjectPtr<USActionComponent> ActionComp;

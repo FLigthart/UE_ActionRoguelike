@@ -12,7 +12,7 @@ USActionEffect::USActionEffect()
 float USActionEffect::GetTimeRemaining() const
 {
 	AGameStateBase* GameState = GetWorld()->GetGameState<AGameStateBase>();
-
+	
 	if (GameState)
 	{
 		float EndTime = TimeStarted + Duration;	// World time at which the ActionEffect will expire.
