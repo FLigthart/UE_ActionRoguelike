@@ -17,11 +17,21 @@ void USWorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTim
 	}
 	
 	FVector2D ScreenPosition;
-	if (UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(GetOwningPlayer(), AttachedActor->GetActorLocation() + WorldOffset, ScreenPosition, true))
+	bool bIsOnScreen = UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(
+		GetOwningPlayer(), AttachedActor->GetActorLocation() + WorldOffset,
+		ScreenPosition, true
+	);
+	
+	if (bIsOnScreen)
 	{
 		if (ParentSizeBox)
 		{
 			ParentSizeBox->SetRenderTranslation(ScreenPosition);
 		}
+	}
+
+	if (ParentSizeBox)	// Do not render when off-screen.
+	{
+		ParentSizeBox->SetVisibility(bIsOnScreen ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
 	}
 }
