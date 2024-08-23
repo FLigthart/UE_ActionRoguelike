@@ -16,7 +16,7 @@ class UE_ACTIONROGUELIKE_API USActionComponent : public UActorComponent
 	
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tags")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Tags")
 	FGameplayTagContainer ActiveGameplayTags;
 	
 	UFUNCTION(BlueprintCallable, Category = "Actions")
@@ -57,7 +57,7 @@ protected:
 
 	/* Default abilities at game start */
 	UPROPERTY(EditAnywhere, Category = "Actions")
-	TArray<TSubclassOf<USAction>> DefaultActions;
+	TArray<TSoftClassPtr<USAction>> DefaultActions;
 	
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	TArray<TObjectPtr<USAction>> Actions;

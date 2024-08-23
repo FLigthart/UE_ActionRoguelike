@@ -172,4 +172,5 @@ void USActionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(USActionComponent, Actions);
+	DOREPLIFETIME(USActionComponent, ActiveGameplayTags)
 }
