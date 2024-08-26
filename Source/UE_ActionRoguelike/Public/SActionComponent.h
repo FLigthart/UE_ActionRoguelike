@@ -5,6 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "SActionComponent.generated.h"
 
+struct FStreamableHandle;
 class USAction;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActionStateChanged, USActionComponent*, OwningComp, USAction*, Action);
@@ -57,7 +58,7 @@ protected:
 
 	/* Default abilities at game start */
 	UPROPERTY(EditAnywhere, Category = "Actions")
-	TArray<TSoftClassPtr<USAction>> DefaultActions;
+	TArray<TSubclassOf<USAction>> DefaultActions;
 	
 	UPROPERTY(BlueprintReadOnly, Replicated)
 	TArray<TObjectPtr<USAction>> Actions;

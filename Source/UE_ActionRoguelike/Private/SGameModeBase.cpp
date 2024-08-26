@@ -153,9 +153,9 @@ void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedID, FVector SpawnLoca
 			USActionComponent* ActionComp = Cast<USActionComponent>(NewBot->GetComponentByClass(USActionComponent::StaticClass()));
 			if (ActionComp)
 			{
-				for (TSubclassOf<USAction> ActionClas : MonsterData->Actions)	// Add all Actions in the MonsterData to the unit.
+				for (TSubclassOf<USAction> ActionClass : MonsterData->Actions)	// Add all Actions in the MonsterData to the unit.
 				{
-					ActionComp->AddAction(NewBot, ActionClas);
+					ActionComp->AddAction(NewBot, ActionClass);
 				}
 			}
 		}

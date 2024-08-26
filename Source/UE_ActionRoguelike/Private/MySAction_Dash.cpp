@@ -50,7 +50,12 @@ void UMySAction_Dash::AttackDelay_Elapsed()
 		FActorSpawnParameters SpawnParams;
 		CalculateSpawnParams(HandLocation, &SpawnTransform, &SpawnParams, 5000.f, false);
 		
-		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+		TSubclassOf<AActor> Projectile = LoadProjectileClass();
+
+		if (ensure(Projectile))
+		{
+			GetWorld()->SpawnActor<AActor>(Projectile ,SpawnTransform, SpawnParams);
+		}
 	}
 
 	FTimerHandle TimerHandle_Exit;

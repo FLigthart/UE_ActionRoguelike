@@ -12,7 +12,7 @@ class UE_ACTIONROGUELIKE_API USAction_ProjectileAttack : public USAction
 protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Attack|Projectile")
-	TSubclassOf<AActor> ProjectileClass;
+	TSoftClassPtr<AActor> ProjectileClass;
 
 	UPROPERTY(VisibleAnywhere, Category = "Sockets")
 	FName SpawnSocket;
@@ -33,6 +33,8 @@ protected:
 
 	void CalculateSpawnParams(FVector SpawnLocation, FTransform* SpawnTransform, FActorSpawnParameters* SpawnTM, float LineTraceLength, bool bIsStraight);
 	FVector PerformLineTrace(FTransform Start, float LineTraceLength, bool bIsStraight); //bIsStraight determines if the LineTrace should keep the Z location of the Start vector.
+
+	TSubclassOf<AActor> LoadProjectileClass();
 	
 public:
 	

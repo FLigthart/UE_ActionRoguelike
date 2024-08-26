@@ -2,6 +2,7 @@
 
 #include "SAction.h"
 #include "Engine/ActorChannel.h"
+#include "Engine/AssetManager.h"
 #include "Net/UnrealNetwork.h"
 #include "UE_ActionRoguelike/UE_ActionRoguelike.h"
 
@@ -100,6 +101,7 @@ bool USActionComponent::StartActionByName(AActor* Instigator, FName ActionName)
 	{
 		if (Action && Action->ActionName == ActionName)
 		{
+			
 			if (!Action->CanStart(Instigator))
 			{
 				continue;

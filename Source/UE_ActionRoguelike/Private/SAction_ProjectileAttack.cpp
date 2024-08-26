@@ -1,6 +1,7 @@
 #include "SAction_ProjectileAttack.h"
 
 #include "SCharInfoInterface.h"
+#include "Engine/StreamableManager.h"
 #include "GameFramework/Character.h"
 
 USAction_ProjectileAttack::USAction_ProjectileAttack()
@@ -41,11 +42,36 @@ void USAction_ProjectileAttack::AttackDelay_Elapsed()
 		FTransform SpawnTransform;
 		FActorSpawnParameters SpawnParams;
 		CalculateSpawnParams(SpawnLocation, &SpawnTransform, &SpawnParams, 5000.f, false);
-		
-		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+
+		TSubclassOf<AActor> Projectile = LoadProjectileClass();
+
+		if (ensure(Projectile))
+		{
+			GetWorld()->SpawnActor<AActor>(Projectile ,SpawnTransform, SpawnParams);
+		}
 	}
 
 	StopAction(Instigator);
+}
+
+TSubclassOf<AActor> USAction_ProjectileAttack::LoadProjectileClass() 	// Load ProjectileClass async
+{
+	FStreamableManager StreamableManager;
+
+	FSoftObjectPath ProjectileClassPath = ProjectileClass.ToSoftObjectPath();
+			
+	TSharedPtr<FStreamableHandle> StreamableHandle = StreamableManager.RequestAsyncLoad(ProjectileClassPath);
+			
+	if (StreamableHandle.IsValid() && StreamableHandle->HasLoadCompleted())
+	{
+		TSubclassOf<AActor> Projectile = Cast<UClass>(StreamableHandle->GetLoadedAsset());
+			
+		StreamableHandle->ReleaseHandle();
+
+		return Projectile;
+	}
+
+	return nullptr;
 }
 
 //Calculates the Spawn parameters for a spawn location, given the player is aiming with the middle of the screen (crosshair)

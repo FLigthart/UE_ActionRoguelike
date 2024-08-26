@@ -22,9 +22,12 @@ void USAction_BlackHoleAttack::StartAction_Implementation(AActor* InstigatorActo
 		FActorSpawnParameters SpawnParams;
 		CalculateSpawnParams(SpawnLocation, &SpawnTransform, &SpawnParams, 5000.f, true);
 		
-		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParams);
+		TSubclassOf<AActor> Projectile = LoadProjectileClass();
 
-		StopAction(Instigator);
+		if (ensure(Projectile))
+		{
+			GetWorld()->SpawnActor<AActor>(Projectile ,SpawnTransform, SpawnParams);
+		}
 	}
-
+	StopAction(Instigator);
 }
