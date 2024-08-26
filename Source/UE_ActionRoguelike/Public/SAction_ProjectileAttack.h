@@ -4,6 +4,8 @@
 #include "SAction.h"
 #include "SAction_ProjectileAttack.generated.h"
 
+struct FStreamableHandle;
+
 UCLASS()
 class UE_ACTIONROGUELIKE_API USAction_ProjectileAttack : public USAction
 {
@@ -13,7 +15,11 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Attack|Projectile")
 	TSoftClassPtr<AActor> ProjectileClass;
-
+	
+	TSubclassOf<AActor> Projectile; // The actual loaded projectile. Is loaded at runtime.
+	
+	TSharedPtr<FStreamableHandle> StreamableHandle;	//StreamableHandle of the projectile
+	
 	UPROPERTY(VisibleAnywhere, Category = "Sockets")
 	FName SpawnSocket;
 
@@ -34,7 +40,7 @@ protected:
 	void CalculateSpawnParams(FVector SpawnLocation, FTransform* SpawnTransform, FActorSpawnParameters* SpawnTM, float LineTraceLength, bool bIsStraight);
 	FVector PerformLineTrace(FTransform Start, float LineTraceLength, bool bIsStraight); //bIsStraight determines if the LineTrace should keep the Z location of the Start vector.
 
-	TSubclassOf<AActor> LoadProjectileClass();
+	void LoadProjectileClass(bool bShouldLoadAsynchronous);
 	
 public:
 	

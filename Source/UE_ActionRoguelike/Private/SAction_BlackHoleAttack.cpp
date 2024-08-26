@@ -13,21 +13,22 @@ void USAction_BlackHoleAttack::StartAction_Implementation(AActor* InstigatorActo
 	USAction::StartAction_Implementation(InstigatorActor);
 	
 	Instigator = Cast<ACharacter>(InstigatorActor);
-	
-	if (ensure(Instigator && ProjectileClass))
+
+	if (Instigator)
 	{
 		FVector SpawnLocation = Instigator->GetMesh()->GetSocketLocation(SpawnSocket); //Spawn about 40 cm from chest
 
 		FTransform SpawnTransform;
 		FActorSpawnParameters SpawnParams;
 		CalculateSpawnParams(SpawnLocation, &SpawnTransform, &SpawnParams, 5000.f, true);
+	
+		LoadProjectileClass(false);
 		
-		TSubclassOf<AActor> Projectile = LoadProjectileClass();
-
-		if (ensure(Projectile))
+		if (Projectile)
 		{
-			GetWorld()->SpawnActor<AActor>(Projectile ,SpawnTransform, SpawnParams);
+			GetWorld()->SpawnActor<AActor>(Projectile, SpawnTransform, SpawnParams);
 		}
 	}
+	
 	StopAction(Instigator);
 }

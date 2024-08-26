@@ -41,21 +41,18 @@ FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
 
 void UMySAction_Dash::AttackDelay_Elapsed()
 {
-	if (ensureAlways(ProjectileClass))
+	//This is the start location of the actual projectile.
+	FVector HandLocation = Instigator->GetMesh()->GetSocketLocation(SpawnSocket);
+
+	FTransform SpawnTransform;
+	FActorSpawnParameters SpawnParams;
+	CalculateSpawnParams(HandLocation, &SpawnTransform, &SpawnParams, 5000.f, false);
+	
+	LoadProjectileClass(false);
+
+	if (Projectile)
 	{
-		//This is the start location of the actual projectile.
-		FVector HandLocation = Instigator->GetMesh()->GetSocketLocation(SpawnSocket);
-
-		FTransform SpawnTransform;
-		FActorSpawnParameters SpawnParams;
-		CalculateSpawnParams(HandLocation, &SpawnTransform, &SpawnParams, 5000.f, false);
-		
-		TSubclassOf<AActor> Projectile = LoadProjectileClass();
-
-		if (ensure(Projectile))
-		{
-			GetWorld()->SpawnActor<AActor>(Projectile ,SpawnTransform, SpawnParams);
-		}
+		GetWorld()->SpawnActor<AActor>(Projectile, SpawnTransform, SpawnParams);
 	}
 
 	FTimerHandle TimerHandle_Exit;

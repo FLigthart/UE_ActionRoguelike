@@ -1,8 +1,10 @@
 #include "SAction_ProjectileAttack.h"
 
 #include "SCharInfoInterface.h"
+#include "Engine/AssetManager.h"
 #include "Engine/StreamableManager.h"
 #include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
 
 USAction_ProjectileAttack::USAction_ProjectileAttack()
 {
@@ -16,6 +18,8 @@ void USAction_ProjectileAttack::StartAction_Implementation(AActor* InstigatorAct
 	Super::StartAction_Implementation(InstigatorActor);
 
 	Instigator = Cast<ACharacter>(InstigatorActor);
+	
+	LoadProjectileClass(false);
 
 	if (!ensure(Instigator))
 	{
@@ -34,44 +38,52 @@ void USAction_ProjectileAttack::StartAction_Implementation(AActor* InstigatorAct
 
 void USAction_ProjectileAttack::AttackDelay_Elapsed()
 {
-	if (ensureAlways(ProjectileClass))
+	//This is the start location of the actual projectile.
+	FVector SpawnLocation = Instigator->GetMesh()->GetSocketLocation(SpawnSocket);
+
+	FTransform SpawnTransform;
+	FActorSpawnParameters SpawnParams;
+	CalculateSpawnParams(SpawnLocation, &SpawnTransform, &SpawnParams, 5000.f, false);
+
+	if (Projectile)
 	{
-		//This is the start location of the actual projectile.
-		FVector SpawnLocation = Instigator->GetMesh()->GetSocketLocation(SpawnSocket);
-
-		FTransform SpawnTransform;
-		FActorSpawnParameters SpawnParams;
-		CalculateSpawnParams(SpawnLocation, &SpawnTransform, &SpawnParams, 5000.f, false);
-
-		TSubclassOf<AActor> Projectile = LoadProjectileClass();
-
-		if (ensure(Projectile))
-		{
-			GetWorld()->SpawnActor<AActor>(Projectile ,SpawnTransform, SpawnParams);
-		}
+		GetWorld()->SpawnActor<AActor>(Projectile, SpawnTransform, SpawnParams);
 	}
 
 	StopAction(Instigator);
 }
 
-TSubclassOf<AActor> USAction_ProjectileAttack::LoadProjectileClass() 	// Load ProjectileClass async
+void USAction_ProjectileAttack::LoadProjectileClass(bool bShouldLoadAsynchronous) 	// Load ProjectileClass sync
 {
-	FStreamableManager StreamableManager;
+	FStreamableManager& StreamableManager = UAssetManager::GetStreamableManager();
 
 	FSoftObjectPath ProjectileClassPath = ProjectileClass.ToSoftObjectPath();
-			
-	TSharedPtr<FStreamableHandle> StreamableHandle = StreamableManager.RequestAsyncLoad(ProjectileClassPath);
-			
-	if (StreamableHandle.IsValid() && StreamableHandle->HasLoadCompleted())
+
+	if (bShouldLoadAsynchronous)
 	{
-		TSubclassOf<AActor> Projectile = Cast<UClass>(StreamableHandle->GetLoadedAsset());
+		StreamableHandle = StreamableManager.RequestAsyncLoad(ProjectileClassPath, [this]()
+		{
+			if (StreamableHandle.IsValid())
+			{
+				Projectile = Cast<UClass>(StreamableHandle->GetLoadedAsset());
+
+				UE_LOG(LogTemp, Log, TEXT("Finished loading Projectile."));
 			
-		StreamableHandle->ReleaseHandle();
-
-		return Projectile;
+				StreamableHandle->ReleaseHandle();
+			}
+		});
 	}
+	else // Load synchronous. This is needed for the BlackholeAttack since it is casted right after the action is started.
+	{
+		StreamableHandle = StreamableManager.RequestSyncLoad(ProjectileClassPath);
 
-	return nullptr;
+		if (StreamableHandle.IsValid())
+		{
+			Projectile = Cast<UClass>(StreamableHandle->GetLoadedAsset());
+
+			StreamableHandle->ReleaseHandle();
+		}
+	}
 }
 
 //Calculates the Spawn parameters for a spawn location, given the player is aiming with the middle of the screen (crosshair)
