@@ -29,9 +29,13 @@ class UE_ACTIONROGUELIKE_API USSaveGame : public USaveGame
 
 public:
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	int32 credits;
 
 	UPROPERTY()
 	TArray<FActorSaveData> SavedActors;
+
+	UPROPERTY(BlueprintReadOnly)
+	FString SaveDate;	// Date of saving
+	
 };

@@ -325,6 +325,13 @@ void ASGameModeBase::WriteSaveGame()
 
 		CurrentSaveGame->SavedActors.Add(ActorData);
 	}
+
+	// Write current date to save file. Will be displayed in menu when selecting save.
+	
+	FString CurrentDate;
+	FDateTime::Today().ToString().Split("-", &CurrentDate, nullptr);
+
+	CurrentSaveGame->SaveDate = CurrentDate;
 	
 	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SaveSlotName, 0);
 }
