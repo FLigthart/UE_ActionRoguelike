@@ -40,7 +40,6 @@ void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent,
 {
 	if (OtherActor && OtherActor != GetInstigator()) //If actor gets hit. Should ignore Instigator and other projectiles.
 	{
-
 		//Parry the projectile and invert velocity. A MagicProjectile can't be parried twice.
 		USActionComponent* ActionComp = Cast<USActionComponent>(OtherActor->GetComponentByClass(USActionComponent::StaticClass()));
 		if (ActionComp && ActionComp->ActiveGameplayTags.HasTag(ParryTag) && !bHasBeenParried)

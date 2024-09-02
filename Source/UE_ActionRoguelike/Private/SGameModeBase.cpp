@@ -68,9 +68,11 @@ void ASGameModeBase::StartPlay()
 	SpawnPowerups();
 }
 
+
 /*
  *	AI Spawn
  */
+
 void ASGameModeBase::SpawnBotTimerElapsed()
 {
 	if (!CVarSpawnBots.GetValueOnGameThread())
@@ -161,6 +163,7 @@ void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedID, FVector SpawnLoca
 		}
 	}
 }
+
 
 /*
  *	Spawn Powerups
@@ -336,9 +339,11 @@ void ASGameModeBase::WriteSaveGame()
 	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SaveSlotName, 0);
 }
 
+
 /*
  *	It's crucial that both LoadSaveGame() and LoadObjectsFromSave() are called. LoadSaveGame() needs to happen in Init() and LoadObjectsFromSave in StartPlay().
  */
+
 void ASGameModeBase::LoadSaveGame()
 {
 	if (UGameplayStatics::DoesSaveGameExist(SaveSlotName, 0))
