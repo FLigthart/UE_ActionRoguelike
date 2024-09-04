@@ -14,6 +14,8 @@ This repository contains the game that I made in Unreal Engine while following t
 * SCharacter and SMinions have a Widget Blueprint that shows their health and icons of SActionEffects that they have with a timer indicating how much time is left till the effect stops. The player itself has a HUD that also shows their rage and in-game time.
 * SMinions have a basic AI that allows them to detect players, shoot, heal and hide behind cover.
     - Minions are spawned in as the game progresses, dependent on a curve that determines the maximum amount of minions at a given time.
+    - The Minion Class is loaded in when a Minion of its type needs to be spawned in the level, using Data Assets and a Data Table. Each Minion type has a Data Asset, which is then used in the Monster Data Table. When the Bot Spawn Query is completed in SGameModeBase, a 
+      random index is selected in the Data Table. The Data Asset, which is the data of this index, is then loaded using LoadPrimaryAsset().
     - A Behaviour Tree determines a minion's actions. Multiple variables determine what a Minion should do (e.g. if the Minion is low health or if it is within Attack Range of a player). Once the best action is determined, a BTTask will perform the action.
 * Powerups are spawned throughout the map with an Environment Query System. The Spawn Rate, Respawn Timer and Credit Cost of each Powerup can be adjusted.
 * There is a saving and loading system where players can save their game state by interacting with an in-game save point. Saving will save the player's credits and transformation as well as the transformation of all other Actors.
