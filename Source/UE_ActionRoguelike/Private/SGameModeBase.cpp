@@ -276,7 +276,7 @@ void ASGameModeBase::KillAll()
 		USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(Bot);
 		if (ensure(AttributeComp) && AttributeComp->IsAlive())
 		{
-			AttributeComp->Kill(this); // TODO: Pass in player(?) for kill credit
+			AttributeComp->Kill(this);
 		}
 	}
 }
