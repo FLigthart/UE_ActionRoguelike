@@ -47,8 +47,6 @@ void UMySAction_Dash::AttackDelay_Elapsed()
 	FTransform SpawnTransform;
 	FActorSpawnParameters SpawnParams;
 	CalculateSpawnParams(HandLocation, &SpawnTransform, &SpawnParams, 5000.f, false);
-	
-	LoadProjectileClass(false);
 
 	if (Projectile)
 	{

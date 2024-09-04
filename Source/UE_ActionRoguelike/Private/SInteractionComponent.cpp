@@ -43,12 +43,6 @@ void USInteractionComponent::BeginPlay()
 
 void USInteractionComponent::PrimaryInteract()
 {
-	/* Possibly the worst way I could've done this. HealthPotion inherits GameplayInterface and lever doesn't since it's in blueprints.
-	If it is the lever, cast will fail, so doesn't have to check if can interact. If it's a HealthPotion, goes inside if statement
-	and should check if CanInteract.
-	TODO: Implement a single way to handle GameplayInterface. (Find way to inherit GameplayInterface to blueprint, or do it without GameplayInterface).
-	*/
-
 	ServerInteract(FocusedActor);
 }
 

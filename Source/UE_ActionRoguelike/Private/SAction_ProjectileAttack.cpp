@@ -19,7 +19,7 @@ void USAction_ProjectileAttack::StartAction_Implementation(AActor* InstigatorAct
 
 	Instigator = Cast<ACharacter>(InstigatorActor);
 	
-	LoadProjectileClass(false);
+	LoadProjectileClass(true);
 
 	if (!ensure(Instigator))
 	{
